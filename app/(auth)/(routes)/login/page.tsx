@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const Login = () => {
@@ -26,7 +27,7 @@ const Login = () => {
         <div className="max-w-xl mx-auto flex flex-col h-screen">
           <div className="flex-1 flex flex-col items-center justify-center h-full space-y-10">
             <h2 className="text-4xl mb-4">/START HERE</h2>
-            <div className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80">
+            <Link href="/" className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80">
               <Image
                 width={28}
                 height={28}
@@ -34,8 +35,8 @@ const Login = () => {
                 alt="google"
               />
               <span>Google</span>
-            </div>
-            <div className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80">
+            </Link>
+            <Link href='/' className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80">
               <Image
                 width={28}
                 height={28}
@@ -43,7 +44,7 @@ const Login = () => {
                 alt="facebook"
               />
               <span>Facebook</span>
-            </div>
+            </Link>
           </div>
           <div className="flex items-center gap-2 pb-16 justify-center">
             <Image
