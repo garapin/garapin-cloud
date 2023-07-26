@@ -10,10 +10,10 @@ import { useAuthState } from "react-firebase-hooks/auth";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const auth = getAuth(firebase_app);
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const router = useRouter();
 
-  if (!user) {
+  if (!loading && !user) {
     router.push("/login");
   }
   

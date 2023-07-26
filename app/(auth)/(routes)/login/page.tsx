@@ -35,7 +35,7 @@ const Login = () => {
   };
 
   if(user) {
-    router.push('/')
+    router.push('/home')
   }
 
   return (

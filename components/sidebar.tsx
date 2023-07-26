@@ -13,7 +13,7 @@ const Sidebar = () => {
   const routes = [
     {
       name: "Home",
-      path: "/",
+      path: "/home",
       icon: HomeIconSVG,
     },
     {
@@ -49,7 +49,7 @@ const Sidebar = () => {
                   <route.icon className="w-6 h-6" />
                   <span>{route.name}</span>
                 </div>
-                {pathname === route.path && (
+                {pathname.startsWith(route.path) && (
                   <ArrowRightSVG className="w-6 h-6" />
                 )}
               </Link>

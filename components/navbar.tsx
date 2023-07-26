@@ -6,9 +6,11 @@ import { Avatar, Menu } from "@mantine/core";
 import { MdOutlineLogout } from "react-icons/md";
 import { getAuth } from "firebase/auth";
 import firebase_app from "@/firebase/firebaseApp";
+import { usePathname } from "next/navigation";
 
 const Navbar = ({ user }: { user: any }) => {
   const auth = getAuth(firebase_app);
+  const pathname = usePathname()
 
   const getInitialName = (name: string) => {
     const splitName = name.split(" ");
@@ -19,11 +21,23 @@ const Navbar = ({ user }: { user: any }) => {
   const logout = () => {
     auth.signOut();
   };
+
+  const getPathName = () => {
+    if(pathname.startsWith('/home')) {
+      return 'Home'
+    } else if(pathname.startsWith('/billing')) {
+      return 'Billing'
+    } else if(pathname.startsWith('/store')) {
+      return 'Store'
+    } else {
+      return 'Home'
+    }
+  }
   return (
     <div className="shadow-sm w-full py-1 px-4 flex items-center justify-between bg-white">
       <div className="flex items-center gap-4">
         <HamburgerSVG className="w-6 h-6" />
-        <Link href="/">HOME</Link>
+        <Link href="/" className="uppercase">{getPathName()}</Link>
       </div>
       <div className="flex items-center gap-4">
         <div className="flex flex-col items-center justify-center">

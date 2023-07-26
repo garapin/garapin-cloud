@@ -1,3 +1,4 @@
+'use client'
 import { DownloadIconSVG } from '@/app/assets/icons/DownloadIcon'
 import Image from 'next/image'
 import { IoMdStar } from 'react-icons/io'
@@ -58,7 +59,7 @@ export default function Home() {
                 </p>
 
                 <div className="action mt-2">
-                  <button className='flex items-center gap-2 bg-green-500 px-4 py-2 rounded-md text-white'>
+                  <button className='flex items-center gap-2 bg-green-500 px-4 py-2 rounded-md text-white' onClick={() => window.open('/home/237623286d6tdbtwuds', '_blank')}>
                     <FaPlay className='w-6 h-6 text-white' />
                     <span>Launch</span>
                   </button>
