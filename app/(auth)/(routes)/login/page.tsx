@@ -1,8 +1,43 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
+import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { useRouter } from "next/navigation";
+import firebase_app from "@/firebase/firebaseApp";
 
 const Login = () => {
+  const router = useRouter();
+  const auth = getAuth(firebase_app);
+  const [user] = useAuthState(auth);
+
+  const signInWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        console.log(result.user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const signInWithFacebook = () => {
+    const provider = new FacebookAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        console.log(result.user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  if(user) {
+    router.push('/')
+  }
+
   return (
     <div className="grid grid-cols-12">
       <div className="col-span-6 relative">
@@ -27,7 +62,7 @@ const Login = () => {
         <div className="max-w-xl mx-auto flex flex-col h-screen">
           <div className="flex-1 flex flex-col items-center justify-center h-full space-y-10">
             <h2 className="text-4xl mb-4">/START HERE</h2>
-            <Link href="/" className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80">
+            <button className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80" onClick={() => signInWithGoogle()}>
               <Image
                 width={28}
                 height={28}
@@ -35,8 +70,8 @@ const Login = () => {
                 alt="google"
               />
               <span>Google</span>
-            </Link>
-            <Link href='/' className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80">
+            </button>
+            <button className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80" onClick={() => signInWithFacebook()}>
               <Image
                 width={28}
                 height={28}
@@ -44,7 +79,7 @@ const Login = () => {
                 alt="facebook"
               />
               <span>Facebook</span>
-            </Link>
+            </button>
           </div>
           <div className="flex items-center gap-2 pb-16 justify-center">
             <Image
