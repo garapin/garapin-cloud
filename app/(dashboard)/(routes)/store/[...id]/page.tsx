@@ -1,9 +1,7 @@
 import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
-import { TrashSVG } from "@/app/assets/icons/TrashIcon";
 import React from "react";
-import { FaPlay } from "react-icons/fa";
 
-const DetailApps = () => {
+const DetailStoreApps = () => {
   return (
     <div className="bg-white p-4 rounded-md">
       <div className="grid grid-cols-12 gap-4">
@@ -69,17 +67,9 @@ const DetailApps = () => {
         </div>
         <div className="col-span-4">
           <div className="max-w-xs mx-auto mb-10">
-            <button className="w-full mb-6 bg-green-500 hover:bg-green-500/80 flex items-center h-16 justify-start px-8 gap-4 text-white rounded-lg py-4 text-2xl">
-              <FaPlay className="w-10 h-10" />
-              <p className="text-center w-full">Launch</p>
-            </button>
             <button className="w-full mb-6 bg-[#223CFF] hover:bg-[#223CFF]/80 flex items-center h-16 justify-start px-8 gap-4 text-white rounded-lg py-2 text-2xl">
               <DownloadIconSVG className="w-15 h-15" />
-              <p className="text-center w-full">Install</p>
-            </button>
-            <button className="w-full bg-red-600 hover:bg-red-600/80 flex items-center h-16 justify-start px-8 gap-4 text-white rounded-lg py-2 text-2xl">
-              <TrashSVG className="w-8 h-8" />
-              <p className="text-center w-full">Delete</p>
+              <p className="text-center w-full">Install Now</p>
             </button>
           </div>
 
@@ -122,4 +112,4 @@ const DetailApps = () => {
   );
 };
 
-export default DetailApps;
+export default DetailStoreApps;

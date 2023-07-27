@@ -1,9 +1,12 @@
+"use client";
+
 import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
 import Image from "next/image";
 import { IoMdStar } from "react-icons/io";
-import { FaPlay } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function Store() {
+  const router = useRouter();
   return (
     <main className="space-y-10">
       <section className="bg-[#344289] rounded-[24px] flex gap-6 items-center text-white py-4 px-6">
@@ -35,7 +38,11 @@ export default function Store() {
             <h2 className="text-2xl">Store</h2>
           </div>
           <div className="col-span-7">
-            <input type="text" placeholder="Search an apps" className="w-full px-4 py-2 rounded-md" />
+            <input
+              type="text"
+              placeholder="Search an apps"
+              className="w-full px-4 py-2 rounded-md"
+            />
           </div>
         </div>
         <div className="grid grid-cols-12 gap-4">
@@ -69,7 +76,10 @@ export default function Store() {
                 </p>
 
                 <div className="action mt-2">
-                  <button className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md text-white">
+                  <button
+                    className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md text-white"
+                    onClick={() => router.push("/store/62gdf7weti7")}
+                  >
                     <DownloadIconSVG className="w-6 h-6 text-white" />
                     <span>Install Now</span>
                   </button>

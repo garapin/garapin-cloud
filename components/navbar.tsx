@@ -1,3 +1,4 @@
+'use client'
 import { HamburgerSVG } from "@/app/assets/icons/Hamburger";
 import { PublishIconSVG } from "@/app/assets/icons/PublishIcon";
 import Link from "next/link";
@@ -6,11 +7,16 @@ import { Avatar, Menu } from "@mantine/core";
 import { MdOutlineLogout } from "react-icons/md";
 import { getAuth } from "firebase/auth";
 import firebase_app from "@/firebase/firebaseApp";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-const Navbar = ({ user }: { user: any }) => {
+const Navbar = ({ user, sidebarOpen, setSidebarOpen } : { 
+  user: any,
+  sidebarOpen: boolean,
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
+ }) => {
   const auth = getAuth(firebase_app);
   const pathname = usePathname()
+  const router = useRouter()
 
   const getInitialName = (name: string) => {
     const splitName = name.split(" ");
@@ -29,6 +35,8 @@ const Navbar = ({ user }: { user: any }) => {
       return 'Billing'
     } else if(pathname.startsWith('/store')) {
       return 'Store'
+    } else if(pathname.startsWith('/publish')) {
+      return 'Publish App'
     } else {
       return 'Home'
     }
@@ -36,11 +44,11 @@ const Navbar = ({ user }: { user: any }) => {
   return (
     <div className="shadow-sm w-full py-1 px-4 flex items-center justify-between bg-white">
       <div className="flex items-center gap-4">
-        <HamburgerSVG className="w-6 h-6" />
+        <HamburgerSVG className="w-6 h-6 cursor-pointer" onClick={() => setSidebarOpen(!sidebarOpen)} />
         <Link href="/" className="uppercase">{getPathName()}</Link>
       </div>
       <div className="flex items-center gap-4">
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center cursor-pointer" onClick={() => router.push('/publish')}>
           <PublishIconSVG className="w-9 h-9" />
           <p>Publish App</p>
         </div>
