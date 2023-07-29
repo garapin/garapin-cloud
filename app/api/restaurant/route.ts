@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(applications);
   } catch (error) {
-    console.log("[GET_novels_ERROR]", error);
+    console.log("error", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(applications);
   } catch (error) {
-    console.log("[GET_novels_ERROR]", error);
+    console.log("error", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

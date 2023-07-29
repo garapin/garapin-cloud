@@ -6,32 +6,60 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } fr
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useRouter } from "next/navigation";
 import firebase_app from "@/firebase/firebaseApp";
+import axios from "axios";
 
 const Login = () => {
   const router = useRouter();
   const auth = getAuth(firebase_app);
-  const [user] = useAuthState(auth);
+  const [ user ] = useAuthState(auth);
+  const [ busy, setBusy ] = React.useState(false);
 
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
+    setBusy(true);
     signInWithPopup(auth, provider)
-      .then((result) => {
-        console.log(result.user);
+      .then(async (result) => {
+        const { user } = result;
+        const payload = {
+          name: user.displayName, 
+          email: user.email, 
+          provider: 'google', 
+          provider_uid: user.uid
+        }
+
+        await axios.post('/api/user', payload).then((res) => {
+          router.push('/home')
+        })
       })
       .catch((error) => {
         console.log(error);
-      });
+      }).finally(() => {
+        setBusy(false);
+      })
   };
 
   const signInWithFacebook = () => {
+    setBusy(true);
     const provider = new FacebookAuthProvider();
     signInWithPopup(auth, provider)
-      .then((result) => {
-        console.log(result.user);
+      .then(async (result) => {
+        const { user } = result;
+        const payload = {
+          name: user.displayName, 
+          email: user.email, 
+          provider: 'facebook', 
+          provider_uid: user.uid
+        }
+
+        await axios.post('/api/user', payload).then((res) => {
+          router.push('/home')
+        })
       })
       .catch((error) => {
         console.log(error);
-      });
+      }).finally(() => {
+        setBusy(false);
+      })
   };
 
   if(user) {
@@ -62,7 +90,7 @@ const Login = () => {
         <div className="max-w-xl mx-auto flex flex-col h-screen">
           <div className="flex-1 flex flex-col items-center justify-center h-full space-y-10">
             <h2 className="text-4xl mb-4">/START HERE</h2>
-            <button className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80" onClick={() => signInWithGoogle()}>
+            <button disabled={busy} className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80" onClick={() => signInWithGoogle()}>
               <Image
                 width={28}
                 height={28}
@@ -71,7 +99,7 @@ const Login = () => {
               />
               <span>Google</span>
             </button>
-            <button className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80" onClick={() => signInWithFacebook()}>
+            <button disabled={busy} className="w-60 shadow-md flex items-center gap-4 p-6 cursor-pointer bg-white hover:bg-white/80" onClick={() => signInWithFacebook()}>
               <Image
                 width={28}
                 height={28}

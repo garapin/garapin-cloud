@@ -4,6 +4,10 @@ import Image from "next/image";
 import { IoMdStar } from "react-icons/io";
 import { FaPlay } from "react-icons/fa";
 import axios from "axios";
+import Banner from "@/components/banner";
+import { useState } from "react";
+import { storage } from "@/firebase/firebaseApp";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const getData = async () => {
   const data = await axios.get("/api/restaurant");
@@ -13,7 +17,7 @@ const getData = async () => {
 
 const postData = async () => {
   const payload = {
-    title: "New Test App",
+    title: "Inventory App2",
     logo: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
     version: "1.0.0",
     category: "inventory",
@@ -25,7 +29,12 @@ const postData = async () => {
     support_detail: "Testing",
     status: "active",
     user_id: "1",
-    screenshoots: [],
+    screenshoots: [
+      {
+        id: 1,
+        url: "dw",
+      },
+    ],
     software_included: [],
     base_image: "MySQL 8.0 & PHP 7.4",
   };
@@ -35,30 +44,46 @@ const postData = async () => {
 };
 
 export default function Home() {
+  const [image, setImage] = useState(null);
+
+  const uploadImage = async (e: any) => {
+    setImage(e.target.files[0]);
+
+    const storageRef: any = ref(storage, `images/${e.target.files[0].name}`);
+
+    uploadBytes(storageRef, e.target.files[0]).then((snapshot) => {
+      console.log("Uploaded a blob or file!", snapshot);
+
+      getDownloadURL(storageRef).then((url) => {
+        console.log("url", url);
+      });
+    });
+  };
+
+  const uploadMultipleImage = async (e: any) => {
+    const files = e.target.files;
+    const promises = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const storageRef: any = ref(storage, `images/${files[i].name}`);
+      promises.push(
+        uploadBytes(storageRef, files[i]).then((snapshot) => {
+          console.log("Uploaded a blob or file!", snapshot);
+          getDownloadURL(storageRef).then((url) => {
+            console.log("url", url);
+          });
+        })
+      );
+    }
+
+    Promise.all(promises).then((snapshots) => {
+      console.log("All files uploaded");
+    });
+  };
   return (
     <main className="space-y-10">
-      <section className="bg-[#344289] rounded-[24px] flex gap-6 items-center text-white py-4 px-6">
-        <Image
-          alt="garapin-cloud"
-          src="/images/inventory-system.png"
-          className="w-[400px]"
-          width={400}
-          height={400}
-        />
-        <div className="flex flex-col justify-between h-full">
-          <h2 className="text-3xl mb-2">INVENTORY SYSTEM</h2>
-          <p className="text-xl font-light pr-4 mb-14">
-            Butuh Inventory system untuk kontrol stok kamu di market-place
-            seperti Tokopedia, Shopee dan Lazada? Cari Aplikasi Inventory Kamu
-            di Marketplace Kami, Dan mulai kontrol inventory Kamu.
-          </p>
-          <div className="flex items-center justify-end pr-4">
-            <button className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md">
-              <DownloadIconSVG className="w-6 h-6" />
-              <span>Install Now</span>
-            </button>
-          </div>
-        </div>
+      <section className="pb-4">
+        <Banner />
       </section>
       <section>
         <h2 className="text-2xl mb-4">Installed Apps</h2>
