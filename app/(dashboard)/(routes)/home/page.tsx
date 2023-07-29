@@ -1,25 +1,59 @@
-'use client'
-import { DownloadIconSVG } from '@/app/assets/icons/DownloadIcon'
-import Image from 'next/image'
-import { IoMdStar } from 'react-icons/io'
-import { FaPlay } from 'react-icons/fa'
+"use client";
+import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
+import Image from "next/image";
+import { IoMdStar } from "react-icons/io";
+import { FaPlay } from "react-icons/fa";
+import axios from "axios";
+
+const getData = async () => {
+  const data = await axios.get("/api/restaurant");
+
+  console.log(data);
+};
+
+const postData = async () => {
+  const payload = {
+    title: "New Test App",
+    logo: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+    version: "1.0.0",
+    category: "inventory",
+    description:
+      "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.  lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.  lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.  lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.  lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. ",
+    price: 100000,
+    source:
+      "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+    support_detail: "Testing",
+    status: "active",
+    user_id: "1",
+    screenshoots: [],
+    software_included: [],
+    base_image: "MySQL 8.0 & PHP 7.4",
+  };
+  const data = await axios.post("/api/restaurant", payload);
+
+  console.log(data);
+};
 
 export default function Home() {
   return (
-    <main className='space-y-10'>
+    <main className="space-y-10">
       <section className="bg-[#344289] rounded-[24px] flex gap-6 items-center text-white py-4 px-6">
         <Image
           alt="garapin-cloud"
           src="/images/inventory-system.png"
-          className='w-[400px]'
+          className="w-[400px]"
           width={400}
           height={400}
         />
-        <div className='flex flex-col justify-between h-full'>
-          <h2 className='text-3xl mb-2'>INVENTORY SYSTEM</h2>
-          <p className='text-xl font-light pr-4 mb-14'>Butuh Inventory system untuk kontrol stok kamu di market-place seperti Tokopedia, Shopee dan Lazada? Cari Aplikasi Inventory Kamu di Marketplace Kami,  Dan mulai kontrol inventory Kamu.</p>
+        <div className="flex flex-col justify-between h-full">
+          <h2 className="text-3xl mb-2">INVENTORY SYSTEM</h2>
+          <p className="text-xl font-light pr-4 mb-14">
+            Butuh Inventory system untuk kontrol stok kamu di market-place
+            seperti Tokopedia, Shopee dan Lazada? Cari Aplikasi Inventory Kamu
+            di Marketplace Kami, Dan mulai kontrol inventory Kamu.
+          </p>
           <div className="flex items-center justify-end pr-4">
-            <button className='flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md'>
+            <button className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md">
               <DownloadIconSVG className="w-6 h-6" />
               <span>Install Now</span>
             </button>
@@ -27,40 +61,45 @@ export default function Home() {
         </div>
       </section>
       <section>
-        <h2 className='text-2xl mb-4'>Installed Apps</h2>
+        <h2 className="text-2xl mb-4">Installed Apps</h2>
         <div className="grid grid-cols-12 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(item => (
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
             <div className="col-span-3 bg-white p-4 rounded-2xl">
               <Image
                 alt="apps"
                 src="/images/apps-img.png"
-                className='w-full mb-2'
+                className="w-full mb-2"
                 width={400}
                 height={400}
               />
               <div className="content">
-                <p className='mb-1'>Installed</p>
-                <p className='text-xl mb-2'>Inventory System</p>
+                <p className="mb-1">Installed</p>
+                <p className="text-xl mb-2">Inventory System</p>
                 <div className="rating flex gap-2 mb-1">
-                  <span className='text-sm text-yellow-400'>4.3</span>
+                  <span className="text-sm text-yellow-400">4.3</span>
                   <div className="flex items-center gap-1">
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
+                    <IoMdStar className="text-yellow-400" />
+                    <IoMdStar className="text-yellow-400" />
+                    <IoMdStar className="text-yellow-400" />
+                    <IoMdStar className="text-yellow-400" />
+                    <IoMdStar className="text-yellow-400" />
                   </div>
-                  <span className='text-slate-500 text-sm'>(16,325)</span>
+                  <span className="text-slate-500 text-sm">(16,325)</span>
                 </div>
                 <p>Next Billing</p>
-                <p className='text-slate-500 text-sm'>
-                  <span className='text-blue-500'>Rp. 125.000 </span>
+                <p className="text-slate-500 text-sm">
+                  <span className="text-blue-500">Rp. 125.000 </span>
                   on 24-Mei-2023
                 </p>
 
                 <div className="action mt-2">
-                  <button className='flex items-center gap-2 bg-green-500 px-4 py-2 rounded-md text-white' onClick={() => window.open('/home/237623286d6tdbtwuds', '_blank')}>
-                    <FaPlay className='w-6 h-6 text-white' />
+                  <button
+                    className="flex items-center gap-2 bg-green-500 px-4 py-2 rounded-md text-white"
+                    onClick={() =>
+                      window.open("/home/237623286d6tdbtwuds", "_blank")
+                    }
+                  >
+                    <FaPlay className="w-6 h-6 text-white" />
                     <span>Launch</span>
                   </button>
                 </div>
@@ -70,5 +109,5 @@ export default function Home() {
         </div>
       </section>
     </main>
-  )
+  );
 }
