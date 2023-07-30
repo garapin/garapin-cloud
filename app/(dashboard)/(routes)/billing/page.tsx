@@ -9,7 +9,7 @@ export default function Billing() {
         <h2 className='text-2xl mb-4'>Due Date</h2>
         <div className="grid grid-cols-12 gap-4">
           {[1, 2, 3, 4].map(item => (
-            <div className="col-span-3 bg-white p-4 rounded-2xl">
+            <div key={item} className="col-span-3 bg-white p-4 rounded-2xl">
               <Image
                 alt="apps"
                 src="/images/apps-img.png"
@@ -52,7 +52,7 @@ export default function Billing() {
         <h2 className='text-2xl mb-4'>Overdue</h2>
         <div className="grid grid-cols-12 gap-4">
           {[1, 2, 3, 4].map(item => (
-            <div className="col-span-3 bg-white p-4 rounded-2xl">
+            <div key={item} className="col-span-3 bg-white p-4 rounded-2xl">
               <Image
                 alt="apps"
                 src="/images/apps-img.png"
@@ -95,7 +95,7 @@ export default function Billing() {
         <h2 className='text-2xl mb-4'>Deleted</h2>
         <div className="grid grid-cols-12 gap-4">
           {[1, 2].map(item => (
-            <div className="col-span-3 bg-white p-4 rounded-2xl">
+            <div key={item} className="col-span-3 bg-white p-4 rounded-2xl">
               <Image
                 alt="apps"
                 src="/images/apps-img.png"

@@ -21,7 +21,7 @@ const Banner = () => {
       className={classes.carousel}
     >
       {[1, 2, 3].map((item) => (
-        <Carousel.Slide>
+        <Carousel.Slide key={item}>
           <div
             className={`bg-[#344289] rounded-[24px] flex gap-6 items-center text-white py-4 px-6`}
           >

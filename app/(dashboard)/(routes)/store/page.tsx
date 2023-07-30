@@ -28,7 +28,7 @@ export default function Store() {
         </div>
         <div className="grid grid-cols-12 gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-            <div className="col-span-3 bg-white p-4 rounded-2xl">
+            <div className="col-span-3 bg-white p-4 rounded-2xl" key={item}>
               <Image
                 alt="apps"
                 src="/images/apps-img.png"
