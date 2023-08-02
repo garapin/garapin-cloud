@@ -7,7 +7,9 @@ import { FaPlus, FaSave, FaTrash } from "react-icons/fa";
 import { deleteObject, ref } from "firebase/storage";
 import {
   Avatar,
+  Button,
   Group,
+  Notification,
   Select,
   Switch,
   Text,
@@ -17,15 +19,26 @@ import {
 } from "@mantine/core";
 import { GarapinRichTextEditor } from "@/components/rich-text-editor";
 import { BsPlusCircle } from "react-icons/bs";
-import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
+import {
+  AiOutlineCheck,
+  AiOutlineClose,
+  AiOutlineLoading3Quarters,
+} from "react-icons/ai";
 import { multipleUploadImage, uploadImage } from "@/firebase/actions";
 import { storage } from "@/firebase/firebaseApp";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { getAuth } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 const PublishApps = () => {
   const { classes } = useStyles();
+  const auth = getAuth();
+  const router = useRouter();
   const theme = useMantineTheme();
   const inputLogoRef = React.useRef<HTMLInputElement>(null);
   const inputScreenshootsRef = React.useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = React.useState(false);
   const schema = z.object({
     logo: z.object({
       image_name: z.string(),
@@ -41,22 +54,24 @@ const PublishApps = () => {
       .string()
       .min(2, { message: "Category should have at least 2 letters" }),
     description: z.string().min(8, { message: "Description is required" }),
-    price: z.string().min(8, { message: "Price is required" }),
+    price: z.string().min(2, { message: "Price is required" }),
     source: z.string().min(8, { message: "Source is required" }),
     support_detail: z
       .string()
       .min(8, { message: "Support Detail is required" }),
     isPublished: z.boolean(),
     base_image: z.string().optional(),
-    screenshoots: z.array(
-      z.object({
-        image_name: z.string(),
-        full_path: z.string(),
-        bucket: z.string(),
-        size: z.number(),
-        url: z.string(),
-      })
-    ).min(1, { message: "Screenshoots is required" }),
+    screenshoots: z
+      .array(
+        z.object({
+          image_name: z.string(),
+          full_path: z.string(),
+          bucket: z.string(),
+          size: z.number(),
+          url: z.string(),
+        })
+      )
+      .min(1, { message: "Screenshoots is required" }),
   });
 
   const form = useForm({
@@ -161,9 +176,7 @@ const PublishApps = () => {
     deleteObject(ref(storage, `images/${image?.image_name}`));
   };
 
-  console.log("form", form);
-
-  const handleSubmit = (values: {
+  const handleSubmit = async (values: {
     title: string;
     category: string;
     description: string;
@@ -173,7 +186,41 @@ const PublishApps = () => {
     isPublished: boolean;
     base_image: string;
   }) => {
-    console.log("values", values);
+    try {
+      setBusy(true);
+      const res = await axios.post("/api/application", {
+        ...values,
+        user_id: auth.currentUser?.uid,
+      });
+
+      if (res) {
+        toast.success("Upload application successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
+        router.push("/publish");
+      }
+    } catch (error) {
+      toast.error("Upload application failed", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } finally {
+      setBusy(false);
+    }
   };
   return (
     <div className="p-4 rounded-md">
@@ -200,7 +247,9 @@ const PublishApps = () => {
                   <FaPlus className="w-6 h-6 text-slate-300" />
                 </div>
               )}
-              <span className="text-slate-500">Upload Logo<span className="text-red-500">*</span></span>
+              <span className="text-slate-500">
+                Upload Logo<span className="text-red-500">*</span>
+              </span>
               <input
                 type="file"
                 ref={inputLogoRef}
@@ -212,6 +261,7 @@ const PublishApps = () => {
               withAsterisk
               label="TITLE"
               size="lg"
+              disabled={busy}
               labelProps={{
                 className: "mb-2 font-medium text-base text-slate-500",
               }}
@@ -224,6 +274,7 @@ const PublishApps = () => {
               itemComponent={SelectItem}
               data={data}
               withAsterisk
+              disabled={busy}
               searchable
               clearable
               labelProps={{
@@ -259,6 +310,7 @@ const PublishApps = () => {
               withAsterisk
               label="PRICE/Month"
               size="lg"
+              disabled={busy}
               labelProps={{
                 className: "mb-2 font-medium text-base text-slate-500",
               }}
@@ -269,6 +321,7 @@ const PublishApps = () => {
               withAsterisk
               label="Source"
               size="lg"
+              disabled={busy}
               labelProps={{
                 className: "mb-2 font-medium text-base text-slate-500",
               }}
@@ -278,6 +331,7 @@ const PublishApps = () => {
             <TextInput
               label="Base Image"
               size="lg"
+              disabled={busy}
               labelProps={{
                 className: "mb-2 font-medium text-base text-slate-500",
               }}
@@ -289,6 +343,7 @@ const PublishApps = () => {
             <div className="flex items-center justify-end">
               <Switch
                 checked={form.values.isPublished}
+                disabled={busy}
                 onChange={(event) => {
                   form.values.isPublished = event.currentTarget.checked;
                   form.setDirty({
@@ -322,11 +377,11 @@ const PublishApps = () => {
                 SUPPORT DETAIL
               </h2>
               <GarapinRichTextEditor
-                content={form.values.description}
+                content={form.values.support_detail}
                 setContent={(e: any) => {
-                  form.values.description = e;
+                  form.values.support_detail = e;
                   form.setDirty({
-                    description: true,
+                    support_detail: true,
                   });
                 }}
                 {...form.getInputProps("support_detail")}
@@ -355,7 +410,7 @@ const PublishApps = () => {
                 />
               </h3>
               <div className="grid grid-cols-12 gap-4">
-                { form.values.screenshoots.map((item: any) => (
+                {form.values.screenshoots.map((item: any) => (
                   <div
                     key={item.image_name}
                     className="col-span-6 bg-slate-100 rounded-md relative"
@@ -382,21 +437,34 @@ const PublishApps = () => {
                     </div>
                   </div>
                 )}
-
               </div>
-                {
-                  form.errors.screenshoots && (
-                    <div className="text-red-500">{form.errors.screenshoots}</div>
-                  )
-                }
+              {form.errors.screenshoots && (
+                <div className="text-red-500">{form.errors.screenshoots}</div>
+              )}
             </div>
             <div>
               <button
                 type="submit"
-                className="flex justify-center w-full items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md text-white"
+                disabled={busy}
+                className={`flex justify-center w-full items-center gap-2 px-4 py-2 rounded-md text-white ${
+                  busy
+                    ? "bg-slate-300 cursor-not-allowed"
+                    : "bg-[#223CFF] hover:bg-[#223CFF]/80"
+                }`}
               >
-                <FaSave className="w-6 h-6 text-white" />
-                <span>SAVE</span>
+                {busy ? (
+                  <>
+                    <AiOutlineLoading3Quarters
+                      className={`w-6 h-6 animate-spin`}
+                    />
+                    <span>Uploading...</span>
+                  </>
+                ) : (
+                  <>
+                    <FaSave className="w-6 h-6 text-white" />
+                    <span>SAVE</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

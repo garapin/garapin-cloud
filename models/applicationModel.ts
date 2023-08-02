@@ -7,12 +7,12 @@ const applicationSchema = new mongoose.Schema({
         trim: true,
     },
     logo: {
-        type: String,
+        type: Object,
         required: [true, 'Please enter a logo'],
     },
     version: {
         type: String,
-        required: [true, 'Please enter a version'],
+        required: [false, 'Please enter a version'],
     },
     category: {
         type: String,
@@ -65,6 +65,6 @@ const applicationSchema = new mongoose.Schema({
     },
 })
 
-const Application = mongoose.model('applications', applicationSchema);
+const Application = mongoose.models.applications || mongoose.model('applications', applicationSchema);
 
 export default Application;

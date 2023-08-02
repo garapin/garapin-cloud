@@ -1,43 +1,104 @@
+"use client";
+
+import firebase_app from "@/firebase/firebaseApp";
 import { Switch, useMantineTheme } from "@mantine/core";
+import axios from "axios";
+import { getAuth } from "firebase/auth";
 import Image from "next/image";
 import React, { useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
 import { IoMdStar } from "react-icons/io";
+import { toast } from "react-toastify";
 
-const PublishCard = () => {
-  const [checked, setChecked] = useState(false);
+const PublishCard = ({ data }: { data: any }) => {
+  const [checked, setChecked] = useState(data.status === "Published");
   const theme = useMantineTheme();
+  const auth = getAuth(firebase_app);
+  const [user] = useAuthState(auth);
+  const [busy, setBusy] = useState(false);
+
+  const handleToggleStatus = async () => {
+    const payload = {
+      status: !checked ? "Published" : "Unpublished",
+      app_id: data._id,
+      user_id: user?.uid,
+    };
+
+    try {
+      const data = await axios.post(
+        `/api/application/publish/${user?.uid}/toggle-status`,
+        payload
+      );
+
+      if (data) {
+        toast.success("Change status success!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
+        setChecked(!checked);
+      }
+    } catch (error) {
+      toast.error("Change status failed!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } finally {
+      setBusy(false);
+    }
+  };
   return (
     <div className="col-span-3 bg-white p-4 rounded-2xl">
       <Image
         alt="apps"
-        src="/images/apps-img.png"
-        className="w-full mb-2"
+        src={data?.screenshoots[0]?.url}
+        className="w-full mb-2 rounded-2xl max-h-52 object-cover"
         width={400}
         height={400}
       />
       <div className="content">
-        <p className="text-xl mb-2">Inventory System</p>
+        <p className="text-xl mb-2 h-14 line-clamp-2">{data.title}</p>
         <div className="rating flex gap-2 mb-1">
-          <span className="text-sm text-yellow-400">4.3</span>
+          <span className="text-sm text-yellow-400">{data.reviews}</span>
           <div className="flex items-center gap-1">
-            <IoMdStar className="text-yellow-400" />
-            <IoMdStar className="text-yellow-400" />
-            <IoMdStar className="text-yellow-400" />
-            <IoMdStar className="text-yellow-400" />
-            <IoMdStar className="text-yellow-400" />
+            {Array.from({ length: 5 }).map((_, i) => (
+              <IoMdStar
+                key={i}
+                className={`${
+                  i + 1 <= data.reviews ? "text-yellow-400" : "text-slate-500"
+                }`}
+              />
+            ))}
           </div>
-          <span className="text-slate-500 text-sm">(16,325)</span>
+          <span className="text-slate-500 text-sm">({data.reviews_count})</span>
         </div>
         <p>Pricing</p>
         <p className="text-slate-500 text-sm">
-          <span className="text-blue-500">Rp. 125.000 </span>
+          <span className="text-blue-500">
+            Rp.{" "}
+            {data.price.toLocaleString("id-ID", {
+              maximumFractionDigits: 2,
+            })}{" "}
+          </span>
         </p>
 
         <div className="action mt-2">
           <Switch
             checked={checked}
-            onChange={(event) => setChecked(event.currentTarget.checked)}
+            onChange={handleToggleStatus}
             color="violet"
             size="md"
             label={

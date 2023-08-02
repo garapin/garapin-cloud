@@ -32,6 +32,6 @@ const installedAppSchema = new mongoose.Schema({
     },
 })
 
-const InstalledApp = mongoose.model('installed_apps', installedAppSchema);
+const InstalledApp = mongoose.models.installed_apps || mongoose.model('installed_apps', installedAppSchema);
 
 export default InstalledApp;
