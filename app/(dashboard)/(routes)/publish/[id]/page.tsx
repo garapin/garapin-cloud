@@ -3,22 +3,80 @@
 import React, { forwardRef } from "react";
 import { useForm, zodResolver } from "@mantine/form";
 import z from "zod";
-import { FaSave } from "react-icons/fa";
-import { Avatar, Group, Select, Text, TextInput } from "@mantine/core";
+import { FaPlus, FaSave, FaTrash } from "react-icons/fa";
+import { deleteObject, ref } from "firebase/storage";
+import {
+  Avatar,
+  Group,
+  Select,
+  Switch,
+  Text,
+  TextInput,
+  createStyles,
+  useMantineTheme,
+} from "@mantine/core";
+import { GarapinRichTextEditor } from "@/components/rich-text-editor";
+import { BsPlusCircle } from "react-icons/bs";
+import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
+import { multipleUploadImage, uploadImage } from "@/firebase/actions";
+import { storage } from "@/firebase/firebaseApp";
 
 const PublishApps = () => {
+  const { classes } = useStyles();
+  const theme = useMantineTheme();
+  const inputLogoRef = React.useRef<HTMLInputElement>(null);
+  const inputScreenshootsRef = React.useRef<HTMLInputElement>(null);
   const schema = z.object({
+    logo: z.object({
+      image_name: z.string(),
+      full_path: z.string(),
+      bucket: z.string(),
+      size: z.number(),
+      url: z.string().min(8, { message: "Logo is required" }),
+    }),
     title: z
       .string()
       .min(2, { message: "Name should have at least 2 letters" }),
     category: z
       .string()
-      .min(2, { message: "Name should have at least 2 letters" }),
+      .min(2, { message: "Category should have at least 2 letters" }),
+    description: z.string().min(8, { message: "Description is required" }),
+    price: z.string().min(8, { message: "Price is required" }),
+    source: z.string().min(8, { message: "Source is required" }),
+    support_detail: z
+      .string()
+      .min(8, { message: "Support Detail is required" }),
+    isPublished: z.boolean(),
+    base_image: z.string().optional(),
+    screenshoots: z.array(
+      z.object({
+        image_name: z.string(),
+        full_path: z.string(),
+        bucket: z.string(),
+        size: z.number(),
+        url: z.string(),
+      })
+    ).min(1, { message: "Screenshoots is required" }),
   });
 
   const form = useForm({
     initialValues: {
+      logo: {
+        image_name: "",
+        full_path: "",
+        bucket: "",
+        size: 0,
+        url: "",
+      },
       title: "",
+      category: "",
+      description: "",
+      price: "",
+      source: "",
+      support_detail: "",
+      isPublished: false,
+      base_image: "",
+      screenshoots: [],
     },
 
     validate: zodResolver(schema),
@@ -26,135 +84,311 @@ const PublishApps = () => {
 
   const data = [
     {
-      image: "https://img.icons8.com/clouds/256/000000/futurama-bender.png",
-      label: "Bender Bending Rodríguez",
-      value: "Bender Bending Rodríguez",
-      description: "Fascinated with cooking",
-    },
-
-    {
-      image: "https://img.icons8.com/clouds/256/000000/futurama-mom.png",
-      label: "Carol Miller",
-      value: "Carol Miller",
-      description: "One of the richest people on Earth",
+      label: "Bussiness App",
+      value: "Bussiness App",
     },
     {
-      image: "https://img.icons8.com/clouds/256/000000/homer-simpson.png",
-      label: "Homer Simpson",
-      value: "Homer Simpson",
-      description: "Overweight, lazy, and often ignorant",
+      label: "Inventory App",
+      value: "Inventory App",
     },
     {
-      image:
-        "https://img.icons8.com/clouds/256/000000/spongebob-squarepants.png",
-      label: "Spongebob Squarepants",
-      value: "Spongebob Squarepants",
-      description: "Not just a sponge",
+      label: "E-Commerce App",
+      value: "E-Commerce App",
+    },
+    {
+      label: "Education App",
+      value: "Education App",
+    },
+    {
+      label: "Health App",
+      value: "Health App",
+    },
+    {
+      label: "Social App",
+      value: "Social App",
+    },
+    {
+      label: "Entertainment App",
+      value: "Entertainment App",
+    },
+    {
+      label: "Travel App",
+      value: "Travel App",
+    },
+    {
+      label: "Other App",
+      value: "Other App",
     },
   ];
 
   interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
-    image: string;
     label: string;
-    description: string;
   }
 
-  // eslint-disable-next-line react/display-name   
+  // eslint-disable-next-line react/display-name
   const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
-    ({ image, label, description, ...others }: ItemProps, ref) => (
+    ({ label, ...others }: ItemProps, ref) => (
       <div ref={ref} {...others}>
         <Group noWrap>
-          <Avatar src={image} />
-
           <div>
             <Text size="sm">{label}</Text>
-            <Text size="xs" opacity={0.65}>
-              {description}
-            </Text>
           </div>
         </Group>
       </div>
     )
   );
 
+  const handleChangeLogo = async (e: any) => {
+    if (form.values.logo?.image_name) {
+      deleteObject(ref(storage, `images/${form.values.logo?.image_name}`));
+    }
+    const data = await uploadImage(e.target.files[0]);
+    form.setFieldValue("logo", data);
+  };
+
+  const handleChangeScreenshoots = async (e: any) => {
+    multipleUploadImage(e.target.files).then((data: any) => {
+      const newScreenshoots: any = [...form.values.screenshoots, ...data];
+      form.setFieldValue("screenshoots", newScreenshoots);
+    });
+  };
+
+  const deleteImage = (image: any) => {
+    const newScreenshoots = form.values.screenshoots.filter(
+      (item: any) => item.image_name !== image.image_name
+    );
+    form.setFieldValue("screenshoots", newScreenshoots);
+    deleteObject(ref(storage, `images/${image?.image_name}`));
+  };
+
+  console.log("form", form);
+
+  const handleSubmit = (values: {
+    title: string;
+    category: string;
+    description: string;
+    price: string;
+    source: string;
+    support_detail: string;
+    isPublished: boolean;
+    base_image: string;
+  }) => {
+    console.log("values", values);
+  };
   return (
     <div className="p-4 rounded-md">
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
+      <form onSubmit={form.onSubmit(handleSubmit)}>
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-8">
+          <div className="col-span-7 space-y-6">
             <div className="mb-6">
-              <div className="h-20 w-20 bg-white rounded-md mb-2"></div>
-              <span className="text-slate-500">Upload Logo</span>
-            </div>
-            <div className="mb-6">
-              <TextInput
-                withAsterisk
-                label="TITLE"
-                size="lg"
-                labelProps={{ className: "mb-2 font-medium text-base text-slate-500" }}
-                placeholder="Masukkan Nama Aplikasi"
-                {...form.getInputProps("title")}
+              {form.values.logo.url ? (
+                <img
+                  src={form.values.logo?.url}
+                  alt="logo"
+                  className="h-20 w-20"
+                  onClick={() => {
+                    inputLogoRef.current?.click();
+                  }}
+                />
+              ) : (
+                <div
+                  className="h-20 w-20 bg-white rounded-md mb-2 border-dashed border border-slate-300 flex items-center justify-center cursor-pointer"
+                  onClick={() => {
+                    inputLogoRef.current?.click();
+                  }}
+                >
+                  <FaPlus className="w-6 h-6 text-slate-300" />
+                </div>
+              )}
+              <span className="text-slate-500">Upload Logo<span className="text-red-500">*</span></span>
+              <input
+                type="file"
+                ref={inputLogoRef}
+                onChange={handleChangeLogo}
+                className="hidden"
               />
             </div>
-            <div className="mb-6">
-              <Select
-                label="CATEGORY"
-                placeholder="Pilih Kategori"
-                itemComponent={SelectItem}
-                data={data}
-                withAsterisk
-                searchable
-                clearable
-                labelProps={{ className: "mb-2 font-medium text-base text-slate-500" }}
-                maxDropdownHeight={400}
-                nothingFound="Tidak ada data yang ditemukan"
-                size="lg"
-                filter={(value: any, item: any) =>
-                  item.label
-                    .toLowerCase()
-                    .includes(value.toLowerCase().trim()) ||
-                  item.description
-                    .toLowerCase()
-                    .includes(value.toLowerCase().trim())
-                }
-                {...form.getInputProps("category")}
+            <TextInput
+              withAsterisk
+              label="TITLE"
+              size="lg"
+              labelProps={{
+                className: "mb-2 font-medium text-base text-slate-500",
+              }}
+              placeholder="Masukkan Nama Aplikasi"
+              {...form.getInputProps("title")}
+            />
+            <Select
+              label="CATEGORY"
+              placeholder="Pilih Kategori"
+              itemComponent={SelectItem}
+              data={data}
+              withAsterisk
+              searchable
+              clearable
+              labelProps={{
+                className: "mb-2 font-medium text-base text-slate-500",
+              }}
+              maxDropdownHeight={400}
+              nothingFound="Tidak ada data yang ditemukan"
+              size="lg"
+              filter={(value: any, item: any) =>
+                item.label.toLowerCase().includes(value.toLowerCase().trim())
+              }
+              {...form.getInputProps("category")}
+            />
+            <div className={`${classes.descriptionEditor}`}>
+              <h2 className="mb-2 font-medium text-base text-slate-500">
+                DESCRIPTION
+              </h2>
+              <GarapinRichTextEditor
+                content={form.values.description}
+                setContent={(e: any) => {
+                  form.values.description = e;
+                  form.setDirty({
+                    description: true,
+                  });
+                }}
+                {...form.getInputProps("description")}
               />
+              {form.errors.description && (
+                <div className="text-red-500">{form.errors.description}</div>
+              )}
             </div>
-            
+            <TextInput
+              withAsterisk
+              label="PRICE/Month"
+              size="lg"
+              labelProps={{
+                className: "mb-2 font-medium text-base text-slate-500",
+              }}
+              placeholder="Masukkan harga / bulan"
+              {...form.getInputProps("price")}
+            />
+            <TextInput
+              withAsterisk
+              label="Source"
+              size="lg"
+              labelProps={{
+                className: "mb-2 font-medium text-base text-slate-500",
+              }}
+              placeholder="GIT Repository (public)"
+              {...form.getInputProps("source")}
+            />
+            <TextInput
+              label="Base Image"
+              size="lg"
+              labelProps={{
+                className: "mb-2 font-medium text-base text-slate-500",
+              }}
+              placeholder="Enter base image"
+              {...form.getInputProps("base_image")}
+            />
           </div>
-          <div className="col-span-4">
-            <div className="mb-6">
-              <h3 className="font-medium text-xl mb-4">Support Details</h3>
-              <p>Supported by: SolidWorx</p>
-              <p>
-                Support URL:{" "}
-                <a href="#" className="text-blue-500">
-                  https://docs.solidinvoice.com/
-                </a>
-              </p>
-              <p>
-                Supprot Email:{" "}
-                <a href="#" className="text-blue-500">
-                  support@solidworx.com
-                </a>
-              </p>
+          <div className="col-span-5 space-y-6">
+            <div className="flex items-center justify-end">
+              <Switch
+                checked={form.values.isPublished}
+                onChange={(event) => {
+                  form.values.isPublished = event.currentTarget.checked;
+                  form.setDirty({
+                    isPublished: true,
+                  });
+                }}
+                color="violet"
+                size="md"
+                label={
+                  form.values.isPublished ? (
+                    <span className="text-green-500">PUBLISHED</span>
+                  ) : (
+                    <span>UNPUBLISHED</span>
+                  )
+                }
+                thumbIcon={
+                  form.values.isPublished ? (
+                    <AiOutlineCheck size="0.8rem" color="#000" stroke={3} />
+                  ) : (
+                    <AiOutlineClose
+                      size="0.8rem"
+                      color={theme.colors.red[theme.fn.primaryShade()]}
+                      stroke={3}
+                    />
+                  )
+                }
+              />
             </div>
-            <div className="mb-6">
-              <h3 className="font-medium text-xl mb-2">Price</h3>
-              <p className="text-xl font-light">Rp. 125.000/Month</p>
+            <div className={`${classes.descriptionSupportDetail}`}>
+              <h2 className="mb-2 font-medium text-base text-slate-500">
+                SUPPORT DETAIL
+              </h2>
+              <GarapinRichTextEditor
+                content={form.values.description}
+                setContent={(e: any) => {
+                  form.values.description = e;
+                  form.setDirty({
+                    description: true,
+                  });
+                }}
+                {...form.getInputProps("support_detail")}
+              />
+              {form.errors.support_detail && (
+                <div className="text-red-500">{form.errors.support_detail}</div>
+              )}
             </div>
             <div>
-              <h3 className="font-medium text-xl mb-2">Screenshoots</h3>
+              <h3 className="font-medium text-xl mb-2 flex items-center gap-2">
+                <span>Screen Shoots</span>
+                <BsPlusCircle
+                  className="cursor-pointer"
+                  onClick={() => {
+                    inputScreenshootsRef.current?.click();
+                  }}
+                />
+                <input
+                  type="file"
+                  name="screenshoots"
+                  id="screenshoots"
+                  onChange={handleChangeScreenshoots}
+                  className="hidden"
+                  ref={inputScreenshootsRef}
+                  multiple
+                />
+              </h3>
               <div className="grid grid-cols-12 gap-4">
-                {[1, 2, 3, 4, 5, 6].map((item) => (
+                { form.values.screenshoots.map((item: any) => (
                   <div
-                    key={item}
-                    className="col-span-6 bg-slate-100 rounded-md"
+                    key={item.image_name}
+                    className="col-span-6 bg-slate-100 rounded-md relative"
                   >
-                    <img src="/images/sc-placeholder.png" alt="data" />
+                    <img src={item.url} alt={item.image_name} />
+                    <FaTrash
+                      className="absolute bottom-2 right-2 cursor-pointer text-red-500"
+                      onClick={() => {
+                        deleteImage(item);
+                      }}
+                    />
                   </div>
                 ))}
+
+                {form.values.screenshoots.length === 0 && (
+                  <div
+                    className="col-span-12 bg-slate-100 rounded-md relative"
+                    onClick={() => {
+                      inputScreenshootsRef.current?.click();
+                    }}
+                  >
+                    <div className="h-40 bg-white rounded-md mb-2 border-dashed border border-slate-300 flex items-center justify-center cursor-pointer">
+                      <FaPlus className="w-6 h-6 text-slate-300" />
+                    </div>
+                  </div>
+                )}
+
               </div>
+                {
+                  form.errors.screenshoots && (
+                    <div className="text-red-500">{form.errors.screenshoots}</div>
+                  )
+                }
             </div>
             <div>
               <button
@@ -173,3 +407,28 @@ const PublishApps = () => {
 };
 
 export default PublishApps;
+
+const useStyles = createStyles((theme) => ({
+  descriptionEditor: {
+    "& .mantine-RichTextEditor-root": {
+      "& .mantine-RichTextEditor-content": {
+        minHeight: 300,
+
+        "& .ProseMirror": {
+          minHeight: 300,
+        },
+      },
+    },
+  },
+  descriptionSupportDetail: {
+    "& .mantine-RichTextEditor-root": {
+      "& .mantine-RichTextEditor-content": {
+        minHeight: 200,
+
+        "& .ProseMirror": {
+          minHeight: 200,
+        },
+      },
+    },
+  },
+}));

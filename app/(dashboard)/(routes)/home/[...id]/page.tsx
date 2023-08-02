@@ -7,7 +7,7 @@ const DetailApps = () => {
   return (
     <div className="bg-white p-4 rounded-md">
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-7">
           <div className="flex gap-4 mb-10">
             <div className="h-20 w-20 bg-slate-100"></div>
             <div className="flex-1">
@@ -67,7 +67,7 @@ const DetailApps = () => {
             </table>
           </div>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-5">
           <div className="max-w-xs mx-auto mb-10">
             <button className="w-full mb-6 bg-green-500 hover:bg-green-500/80 flex items-center h-16 justify-start px-8 gap-4 text-white rounded-lg py-4 text-2xl">
               <FaPlay className="w-10 h-10" />

@@ -7,7 +7,7 @@ import axios from "axios";
 import Banner from "@/components/banner";
 import { useState } from "react";
 import { storage } from "@/firebase/firebaseApp";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes, deleteObject } from "firebase/storage";
 
 const getData = async () => {
   const data = await axios.get("/api/restaurant");
