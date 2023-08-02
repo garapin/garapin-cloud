@@ -1,13 +1,31 @@
 "use client";
 
-import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
-import Image from "next/image";
-import { IoMdStar } from "react-icons/io";
-import { useRouter } from "next/navigation";
 import Banner from "@/components/banner";
+import StoreCard from "@/components/store-card";
+import React, { useState } from "react";
+import axios from "axios";
+import { Skeleton } from "@mantine/core";
 
 export default function Store() {
-  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const [storeApps, setStoreApps] = useState([]);
+
+  const getStoreApps = async () => {
+    try {
+      setBusy(true);
+      const data = await axios.get(`/api/store`);
+      setStoreApps(data.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  React.useEffect(() => {
+    getStoreApps();
+  }, []);
+
   return (
     <main className="space-y-10">
       <section className="pb-4">
@@ -26,48 +44,31 @@ export default function Store() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-12 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-            <div className="col-span-3 bg-white p-4 rounded-2xl" key={item}>
-              <Image
-                alt="apps"
-                src="/images/apps-img.png"
-                className="w-full mb-2"
-                width={400}
-                height={400}
-              />
-              <div className="content">
-                <p className="mb-1">Installed</p>
-                <p className="text-xl mb-2">Inventory System</p>
-                <div className="rating flex gap-2 mb-1">
-                  <span className="text-sm text-yellow-400">4.3</span>
-                  <div className="flex items-center gap-1">
-                    <IoMdStar className="text-yellow-400" />
-                    <IoMdStar className="text-yellow-400" />
-                    <IoMdStar className="text-yellow-400" />
-                    <IoMdStar className="text-yellow-400" />
-                    <IoMdStar className="text-yellow-400" />
-                  </div>
-                  <span className="text-slate-500 text-sm">(16,325)</span>
-                </div>
-                <p>Price</p>
-                <p className="text-slate-500 text-sm">
-                  <span className="text-blue-500">Rp. 125.000 </span>
-                  on 24-Mei-2023
-                </p>
 
-                <div className="action mt-2">
-                  <button
-                    className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md text-white"
-                    onClick={() => router.push("/store/62gdf7weti7")}
-                  >
-                    <DownloadIconSVG className="w-6 h-6 text-white" />
-                    <span>Install Now</span>
-                  </button>
-                </div>
-              </div>
+        {
+          storeApps.length === 0 && !busy && (
+            <div className="flex items-center justify-center py-20">
+              <p className="text-2xl">
+                There is no apps in store. Please come back later.
+              </p>
             </div>
+          )
+        }
+
+        <div className="grid grid-cols-12 gap-4">
+          {storeApps.map((item, i) => (
+            <StoreCard key={i} data={item} />
           ))}
+
+          {busy &&
+            [1, 2, 3, 4].map((item) => (
+              <div className="col-span-3" key={item}>
+                <Skeleton height={200} radius="md" className="mb-2" />
+                <Skeleton height={20} radius="md" className="mb-2" />
+                <Skeleton height={25} radius="md" className="mb-2" />
+                <Skeleton height={20} radius="md" className="mb-2" />
+              </div>
+            ))}
         </div>
       </section>
     </main>

@@ -1,4 +1,5 @@
 import dbConnect from "@/lib/mongodb";
+import { createSlug } from "@/lib/utils";
 import { Application, Images } from "@/models";
 import { NextResponse } from "next/server";
 
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
         name: logo.image_name,
       },
       title,
+      slug: createSlug(title),
       category,
       description,
       price,

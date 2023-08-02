@@ -1,85 +1,11 @@
 "use client";
-import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
+
 import Image from "next/image";
 import { IoMdStar } from "react-icons/io";
 import { FaPlay } from "react-icons/fa";
-import axios from "axios";
 import Banner from "@/components/banner";
-import { useState } from "react";
-import { storage } from "@/firebase/firebaseApp";
-import { getDownloadURL, ref, uploadBytes, deleteObject } from "firebase/storage";
-
-const getData = async () => {
-  const data = await axios.get("/api/restaurant");
-
-  console.log(data);
-};
-
-const postData = async () => {
-  const payload = {
-    title: "Inventory App2",
-    logo: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
-    version: "1.0.0",
-    category: "inventory",
-    description:
-      "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.  lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.  lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.  lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.  lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. ",
-    price: 100000,
-    source:
-      "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
-    support_detail: "Testing",
-    status: "active",
-    user_id: "1",
-    screenshoots: [
-      {
-        id: 1,
-        url: "dw",
-      },
-    ],
-    software_included: [],
-    base_image: "MySQL 8.0 & PHP 7.4",
-  };
-  const data = await axios.post("/api/restaurant", payload);
-
-  console.log(data);
-};
 
 export default function Home() {
-  const [image, setImage] = useState(null);
-
-  const uploadImage = async (e: any) => {
-    setImage(e.target.files[0]);
-
-    const storageRef: any = ref(storage, `images/${e.target.files[0].name}`);
-
-    uploadBytes(storageRef, e.target.files[0]).then((snapshot) => {
-      console.log("Uploaded a blob or file!", snapshot);
-
-      getDownloadURL(storageRef).then((url) => {
-        console.log("url", url);
-      });
-    });
-  };
-
-  const uploadMultipleImage = async (e: any) => {
-    const files = e.target.files;
-    const promises = [];
-
-    for (let i = 0; i < files.length; i++) {
-      const storageRef: any = ref(storage, `images/${files[i].name}`);
-      promises.push(
-        uploadBytes(storageRef, files[i]).then((snapshot) => {
-          console.log("Uploaded a blob or file!", snapshot);
-          getDownloadURL(storageRef).then((url) => {
-            console.log("url", url);
-          });
-        })
-      );
-    }
-
-    Promise.all(promises).then((snapshots) => {
-      console.log("All files uploaded");
-    });
-  };
   return (
     <main className="space-y-10">
       <section className="pb-4">

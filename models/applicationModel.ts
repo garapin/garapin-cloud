@@ -6,6 +6,11 @@ const applicationSchema = new mongoose.Schema({
         required: [true, 'Please enter a title'],
         trim: true,
     },
+    slug: {
+        type: String,
+        required: [true, 'Please enter a slug'],
+        trim: true,
+    },
     logo: {
         type: Object,
         required: [true, 'Please enter a logo'],

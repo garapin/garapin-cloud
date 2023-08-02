@@ -45,6 +45,13 @@ export default function Publish() {
             <span>Add New</span>
           </button>
         </div>
+        {
+          publishedApps.length === 0 && !busy && (
+            <div className="flex items-center justify-center py-20">
+              <p className="text-2xl">You don't have any published apps.</p>
+            </div>
+          )
+        }
         <div className="grid grid-cols-12 gap-4">
           {publishedApps.map((item, i) => (
             <PublishCard key={i} data={item} />

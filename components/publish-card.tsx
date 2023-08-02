@@ -65,7 +65,7 @@ const PublishCard = ({ data }: { data: any }) => {
       <Image
         alt="apps"
         src={data?.screenshoots[0]?.url}
-        className="w-full mb-2 rounded-2xl max-h-52 object-cover"
+        className="w-full mb-2 rounded-2xl h-52 object-cover"
         width={400}
         height={400}
       />
@@ -101,6 +101,7 @@ const PublishCard = ({ data }: { data: any }) => {
             onChange={handleToggleStatus}
             color="violet"
             size="md"
+            className="cursor-pointer"
             label={
               checked ? (
                 <span className="text-green-500">PUBLISHED</span>
@@ -110,12 +111,12 @@ const PublishCard = ({ data }: { data: any }) => {
             }
             thumbIcon={
               checked ? (
-                <AiOutlineCheck size="0.8rem" color="#000" stroke={3} />
+                <AiOutlineCheck size="0.8rem" color="#000" stroke={3} className="cursor-pointer" />
               ) : (
                 <AiOutlineClose
                   size="0.8rem"
                   color={theme.colors.red[theme.fn.primaryShade()]}
-                  stroke={3}
+                  stroke={3} className="cursor-pointer"
                 />
               )
             }
