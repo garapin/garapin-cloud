@@ -1,4 +1,5 @@
 import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
+import { Button } from "@mantine/core";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -16,7 +17,7 @@ const StoreCard = ({ data }: any) => {
         height={400}
       />
       <div className="content">
-        <p className="mb-1">Installed</p>
+        <p className={`mb-1 text-[#344289]`}>{data.installed ? "Installed" : "Not Installed"}</p>
         <p className="text-xl mb-2 h-14 line-clamp-2">{data.title}</p>
         <div className="rating flex gap-2 mb-1">
           <span className="text-sm text-yellow-400">{data.reviews}</span>
@@ -44,13 +45,16 @@ const StoreCard = ({ data }: any) => {
         </p>
 
         <div className="action mt-2">
-          <button
-            className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md text-white"
+          <Button
+            leftIcon={<DownloadIconSVG className="w-6 h-6 text-white" />}
+            className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 rounded-md text-white font-normal text-base"
             onClick={() => router.push(`/store/${data.slug}`)}
+            disabled={data.installed}
           >
-            <DownloadIconSVG className="w-6 h-6 text-white" />
-            <span>Install Now</span>
-          </button>
+            {
+              data.installed ? "Installed" : "Install Now"
+            }
+          </Button>
         </div>
       </div>
     </div>

@@ -1,15 +1,23 @@
 "use client";
 
 import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
+import firebase_app from "@/firebase/firebaseApp";
+import { Button, LoadingOverlay } from "@mantine/core";
 import axios from "axios";
+import { getAuth } from "firebase/auth";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { toast } from "react-toastify";
 
 const DetailStoreApps = () => {
   const pathname = usePathname();
   const slug = pathname.split("/")[2];
   const [busy, setBusy] = useState(false);
   const [detail, setDetail] = useState<any>(null);
+  const [installing, setInstalling] = useState(false);
+  const auth = getAuth(firebase_app);
+  const [user] = useAuthState(auth);
 
   const getAppDetail = async () => {
     try {
@@ -27,9 +35,47 @@ const DetailStoreApps = () => {
     getAppDetail();
   }, []);
 
-  console.log("detail", detail);
+  const handleInstall = async () => {
+    try {
+      setInstalling(true);
+
+      const data = await axios.post(`/api/application/install`, {
+        app_id: detail._id,
+        user_id: user?.uid,
+      });
+
+      if (data) {
+        toast.success("Application installed successfully!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        getAppDetail();
+      }
+    } catch (error) {
+      toast.error("Application install failed!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } finally {
+      setInstalling(false);
+    }
+  };
+
   return (
     <div className="bg-white p-4 rounded-md min-h-[calc(88vh)]">
+      <LoadingOverlay visible={busy} overlayBlur={2} />
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-8">
           <div className="flex gap-4 mb-10">
@@ -40,7 +86,9 @@ const DetailStoreApps = () => {
             />
             <div className="flex-1">
               <h2 className="text-4xl line-clamp-2 mb-2">{detail?.title}</h2>
-              <p className="text-slate-500 mb-2">By SolidWorx</p>
+              <p className="text-slate-500 mb-2">
+                {detail?.user?.publisher_name}
+              </p>
               {/* <p className="mb-2">Version 2.0.3</p> */}
               <div className="bg-slate-500 w-fit px-2 py-1 rounded-sm font-medium text-white">
                 {detail?.category}
@@ -51,40 +99,31 @@ const DetailStoreApps = () => {
             <h2 className="text-2xl font-semibold mb-2">Description</h2>
             <div dangerouslySetInnerHTML={{ __html: detail?.description }} />
           </div>
-          {/* <div className="mb-6">
-            <h2 className="text-2xl font-semibold mb-2">Software Included</h2>
-            <table className="w-full border rounded-md">
-              <thead>
-                <tr>
-                  <th className="text-left p-4 bg-slate-200 font-medium">
-                    Package
-                  </th>
-                  <th className="text-left p-4 bg-slate-200 font-medium">
-                    Version
-                  </th>
-                  <th className="text-left p-4 bg-slate-200 font-medium">
-                    License
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {[1, 2, 3, 4, 5].map((item) => (
-                  <tr key={item}>
-                    <td className="p-4">Inventory System</td>
-                    <td className="p-4">2.0.3</td>
-                    <td className="p-4">MIT</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div> */}
         </div>
         <div className="col-span-4">
-          <div className="max-w-xs mx-auto mb-10">
-            <button className="w-full mb-6 bg-[#223CFF] hover:bg-[#223CFF]/80 flex items-center h-16 justify-start px-8 gap-4 text-white rounded-lg py-2 text-2xl">
-              <DownloadIconSVG className="w-15 h-15" />
-              <p className="text-center w-full">Install Now</p>
-            </button>
+          <div className="max-w-xs mx-auto mb-10 relative">
+            <Button
+              leftIcon={<DownloadIconSVG className="w-10 h-10" />}
+              className="w-full mb-6 bg-[#223CFF] hover:bg-[#223CFF]/80 flex items-center h-16 justify-start px-8 gap-4 text-white rounded-lg py-2 text-2xl font-normal"
+              loading={installing}
+              disabled={installing || detail?.installed}
+              styles={{
+                inner: {
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                },
+                label: {
+                  flex: 1,
+                },
+              }}
+              loaderPosition="center"
+              onClick={handleInstall}
+            >
+              <p className="text-center w-full">
+                {detail?.installed ? "Installed" : "Install Now"}
+              </p>
+            </Button>
           </div>
 
           <div className="mb-6">

@@ -1,7 +1,7 @@
 "use client";
 
 import firebase_app from "@/firebase/firebaseApp";
-import { Switch, useMantineTheme } from "@mantine/core";
+import { LoadingOverlay, Switch, useMantineTheme } from "@mantine/core";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 import Image from "next/image";
@@ -26,6 +26,7 @@ const PublishCard = ({ data }: { data: any }) => {
     };
 
     try {
+      setBusy(true);
       const data = await axios.post(
         `/api/application/publish/${user?.uid}/toggle-status`,
         payload
@@ -61,7 +62,8 @@ const PublishCard = ({ data }: { data: any }) => {
     }
   };
   return (
-    <div className="col-span-3 bg-white p-4 rounded-2xl">
+    <div className="col-span-3 bg-white p-4 rounded-2xl relative">
+      <LoadingOverlay visible={busy} overlayBlur={2} />
       <Image
         alt="apps"
         src={data?.screenshoots[0]?.url}

@@ -5,15 +5,28 @@ import StoreCard from "@/components/store-card";
 import React, { useState } from "react";
 import axios from "axios";
 import { Skeleton } from "@mantine/core";
+import { useDebouncedValue } from '@mantine/hooks';
+import firebase_app from "@/firebase/firebaseApp";
+import { getAuth } from "firebase/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 export default function Store() {
   const [busy, setBusy] = useState(false);
   const [storeApps, setStoreApps] = useState([]);
+  const [query, setQuery] = useState("");
+  const [debounced] = useDebouncedValue(query, 500);
+  const auth = getAuth(firebase_app);
+  const [user] = useAuthState(auth);
 
-  const getStoreApps = async () => {
+  const getStoreApps = async (query: string, user: any) => {
     try {
       setBusy(true);
-      const data = await axios.get(`/api/store`);
+      const data = await axios.get(`/api/store`, {
+        params: {
+          q: query,
+          user_id: user?.uid,
+        },
+      });
       setStoreApps(data.data);
     } catch (error) {
       console.log(error);
@@ -23,8 +36,9 @@ export default function Store() {
   };
 
   React.useEffect(() => {
-    getStoreApps();
-  }, []);
+    if(!user) return;
+    getStoreApps(query, user);
+  }, [debounced, user]);
 
   return (
     <main className="space-y-10">
@@ -41,6 +55,7 @@ export default function Store() {
               type="text"
               placeholder="Search an apps"
               className="w-full px-4 py-2 rounded-md"
+              onChange={(e) => setQuery(e.target.value)}
             />
           </div>
         </div>

@@ -12,7 +12,7 @@ const installedAppSchema = new mongoose.Schema({
     },
     version: {
         type: String,
-        required: true,
+        required: false,
     },
     next_billing_date: {
         type: Date,

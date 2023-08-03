@@ -6,10 +6,8 @@ import z from "zod";
 import { FaPlus, FaSave, FaTrash } from "react-icons/fa";
 import { deleteObject, ref } from "firebase/storage";
 import {
-  Avatar,
   Button,
   Group,
-  Notification,
   Select,
   Switch,
   Text,
@@ -22,7 +20,6 @@ import { BsPlusCircle } from "react-icons/bs";
 import {
   AiOutlineCheck,
   AiOutlineClose,
-  AiOutlineLoading3Quarters,
 } from "react-icons/ai";
 import { multipleUploadImage, uploadImage } from "@/firebase/actions";
 import { storage } from "@/firebase/firebaseApp";
@@ -443,29 +440,22 @@ const PublishApps = () => {
               )}
             </div>
             <div>
-              <button
+              <Button
+                leftIcon={<FaSave className="w-6 h-6" />}
+                className="w-full mb-6 bg-[#223CFF] hover:bg-[#223CFF]/80 flex items-center justify-start px-8 gap-4 text-white text-lg rounded-lg py-2 font-normal"
+                loading={busy}
                 type="submit"
-                disabled={busy}
-                className={`flex justify-center w-full items-center gap-2 px-4 py-2 rounded-md text-white ${
-                  busy
-                    ? "bg-slate-300 cursor-not-allowed"
-                    : "bg-[#223CFF] hover:bg-[#223CFF]/80"
-                }`}
+                styles={{
+                  inner: {
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                  },
+                }}
+                loaderPosition="center"
               >
-                {busy ? (
-                  <>
-                    <AiOutlineLoading3Quarters
-                      className={`w-6 h-6 animate-spin`}
-                    />
-                    <span>Uploading...</span>
-                  </>
-                ) : (
-                  <>
-                    <FaSave className="w-6 h-6 text-white" />
-                    <span>SAVE</span>
-                  </>
-                )}
-              </button>
+                <p className="text-center w-full">SAVE</p>
+              </Button>
             </div>
           </div>
         </div>
