@@ -17,7 +17,8 @@ export async function GET(request: Request) {
       const reviews = await Review.find({ app_id: id });
 
       const stars = reviews.reduce((acc, review) => {
-        return acc + review.star;
+        const sum = acc + review.star;
+        return sum / reviews.length;
       }, 0);
 
       myApps[i] = {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect } from "react";
 import { useForm, zodResolver } from "@mantine/form";
 import z from "zod";
 import { FaPlus, FaSave, FaTrash } from "react-icons/fa";
@@ -8,6 +8,7 @@ import { deleteObject, ref } from "firebase/storage";
 import {
   Button,
   Group,
+  LoadingOverlay,
   Select,
   Switch,
   Text,
@@ -17,31 +18,32 @@ import {
 } from "@mantine/core";
 import { GarapinRichTextEditor } from "@/components/rich-text-editor";
 import { BsPlusCircle } from "react-icons/bs";
-import {
-  AiOutlineCheck,
-  AiOutlineClose,
-} from "react-icons/ai";
+import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
 import { multipleUploadImage, uploadImage } from "@/firebase/actions";
 import { storage } from "@/firebase/firebaseApp";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const PublishApps = () => {
   const { classes } = useStyles();
   const auth = getAuth();
+  const [id, setId] = React.useState<any>(null);
+  const pathname = usePathname();
+  const slug = pathname.split("/")[2];
   const router = useRouter();
   const theme = useMantineTheme();
   const inputLogoRef = React.useRef<HTMLInputElement>(null);
   const inputScreenshootsRef = React.useRef<HTMLInputElement>(null);
   const [busy, setBusy] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const schema = z.object({
     logo: z.object({
       image_name: z.string(),
-      full_path: z.string(),
-      bucket: z.string(),
-      size: z.number(),
+      full_path: z.string().optional(),
+      bucket: z.string().optional(),
+      size: z.number().optional(),
       url: z.string().min(8, { message: "Logo is required" }),
     }),
     title: z
@@ -62,9 +64,9 @@ const PublishApps = () => {
       .array(
         z.object({
           image_name: z.string(),
-          full_path: z.string(),
-          bucket: z.string(),
-          size: z.number(),
+          full_path: z.string().optional(),
+          bucket: z.string().optional(),
+          size: z.number().optional(),
           url: z.string(),
         })
       )
@@ -185,10 +187,19 @@ const PublishApps = () => {
   }) => {
     try {
       setBusy(true);
-      const res = await axios.post("/api/application", {
-        ...values,
-        user_id: auth.currentUser?.uid,
-      });
+      let res = null;
+      if (slug === "new") {
+        res = await axios.post("/api/application", {
+          ...values,
+          user_id: auth.currentUser?.uid,
+        });
+      } else {
+        res = await axios.put("/api/application", {
+          ...values,
+          id: id,
+          user_id: auth.currentUser?.uid,
+        });
+      }
 
       if (res) {
         toast.success("Upload application successfully", {
@@ -219,8 +230,55 @@ const PublishApps = () => {
       setBusy(false);
     }
   };
+
+  const getAppDetail = async () => {
+    try {
+      setLoading(true)
+      const data = await axios.get(`/api/store/${slug}`);
+      if (data) {
+        form.setValues({
+          logo: {
+            image_name: data.data.logo.name,
+            url: data.data.logo.url,
+            bucket: data.data.logo.bucket,
+            full_path: data.data.logo.full_path,
+            size: data.data.logo.size,
+          },
+          title: data.data.title,
+          category: data.data.category,
+          description: data.data.description,
+          price: String(data.data.price),
+          source: data.data.source,
+          support_detail: data.data.support_detail,
+          isPublished: Boolean(data.data.status === "Published"),
+          base_image: data.data.base_image,
+          screenshoots: data.data.screenshoots.map((item: any) => ({
+            image_name: item.name,
+            url: item.url,
+            bucket: item.bucket,
+            full_path: item.full_path,
+            size: item.size,
+          })),
+        });
+
+        setId(data.data._id);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (slug !== "new") {
+      getAppDetail();
+    }
+  }, []);
+
   return (
     <div className="p-4 rounded-md">
+      <LoadingOverlay visible={loading} overlayBlur={2} />
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-7 space-y-6">
@@ -297,6 +355,7 @@ const PublishApps = () => {
                     description: true,
                   });
                 }}
+                key={form.values.description}
                 {...form.getInputProps("description")}
               />
               {form.errors.description && (
@@ -381,6 +440,7 @@ const PublishApps = () => {
                     support_detail: true,
                   });
                 }}
+                key={form.values.support_detail}
                 {...form.getInputProps("support_detail")}
               />
               {form.errors.support_detail && (

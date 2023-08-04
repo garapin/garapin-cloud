@@ -1,11 +1,10 @@
-import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
-import { Button } from "@mantine/core";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { FaPlay } from "react-icons/fa";
 import { IoMdStar } from "react-icons/io";
 
-const StoreCard = ({ data }: any) => {
+const LaunchCard = ({ data }: any) => {
   const router = useRouter();
   return (
     <div className="col-span-3 bg-white p-4 rounded-2xl">
@@ -17,7 +16,7 @@ const StoreCard = ({ data }: any) => {
         height={400}
       />
       <div className="content">
-        <p className={`mb-1 text-[#344289]`}>{data.installed ? "Installed" : "Not Installed"}</p>
+        <p className="mb-1">Installed</p>
         <p className="text-xl mb-2 h-14 line-clamp-2">{data.title}</p>
         <div className="rating flex gap-2 mb-1">
           <span className="text-sm text-yellow-400">{data.reviews}</span>
@@ -33,7 +32,7 @@ const StoreCard = ({ data }: any) => {
           </div>
           <span className="text-slate-500 text-sm">({data.reviews_count})</span>
         </div>
-        <p>Price</p>
+        <p>Next Billing</p>
         <p className="text-slate-500 text-sm">
           <span className="text-blue-500">
             Rp.{" "}
@@ -41,21 +40,27 @@ const StoreCard = ({ data }: any) => {
               maximumFractionDigits: 2,
             })}{" "}
           </span>
-          {/* on 24-Mei-2023 */}
+          on {
+            new Date(data.next_billing_date).toLocaleDateString("id-ID", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            })
+          }
         </p>
 
         <div className="action mt-2">
-          <Button
-            leftIcon={<DownloadIconSVG className="w-6 h-6 text-white" />}
-            className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 rounded-md text-white font-normal text-base"
-            onClick={() => router.push(`/store/${data.slug}`)}
+          <button
+            className="flex items-center gap-2 bg-green-500 px-4 py-2 rounded-md text-white"
+            onClick={() => router.push(`/home/${data.slug}`)}
           >
-            Install Now
-          </Button>
+            <FaPlay className="w-6 h-6 text-white" />
+            <span>Launch</span>
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default StoreCard;
+export default LaunchCard;

@@ -1,5 +1,5 @@
 import dbConnect from "@/lib/mongodb";
-import { Application, InstalledApp } from "@/models";
+import { Application, InstalledApp, Review } from "@/models";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const installedApp = await InstalledApp.findOne({ app_id, user_id });
 
     if(installedApp) {
-        return new NextResponse("Application already installed", { status: 400 });
+        await InstalledApp.deleteOne({ app_id, user_id });
     }
 
     const newInstalledApp = new InstalledApp({
@@ -34,5 +34,62 @@ export async function POST(request: Request) {
   } catch (error) {
     console.log("error", error);
     return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
+export async function GET(req: Request, res: Response) {
+  await dbConnect();
+
+  const searchParams = new URLSearchParams(req?.url?.split("?")[1]);
+  const user_id = searchParams.get("user_id");
+
+  try {
+    const installedApps = await InstalledApp.find({ user_id });
+
+    // get application details
+    const appIds = installedApps.map((app) => app.app_id);
+    const applications = await Application.find({ _id: { $in: appIds } });
+
+    for (let i = 0; i < applications.length; i++) {
+      const app = applications[i];
+      const id = app._id.toString();
+      const installedApp = installedApps.find((app) => app.app_id === id);
+      const reviews = await Review.find({ app_id: id });
+
+      const stars = reviews.reduce((acc, review) => {
+        const sum = acc + review.star;
+        return sum / reviews.length;
+      }, 0);
+
+      applications[i] = {
+        ...app._doc,
+        next_billing_date: installedApp.next_billing_date,
+        app_status: installedApp.app_status,
+        reviews: stars,
+        reviews_count: reviews.length,
+      };
+    }
+    return NextResponse.json(applications);
+  } catch (error) {
+    console.log("error", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
+// delete installed Apps
+export async function DELETE(req: Request, res: Response) {
+  await dbConnect();
+  
+  const searchParams = new URLSearchParams(req?.url?.split("?")[1]);
+  const user_id = searchParams.get("user_id");
+  const app_id = searchParams.get("app_id");
+  
+  try {
+      await InstalledApp.deleteOne({ app_id, user_id });
+  
+      return NextResponse.json({ message: "success" });
+  } catch (error) {
+      console.log("error", error);
+      return new NextResponse("Internal Error", { status: 500 });
   }
 }

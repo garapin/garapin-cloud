@@ -5,6 +5,7 @@ import { LoadingOverlay, Switch, useMantineTheme } from "@mantine/core";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
@@ -17,6 +18,7 @@ const PublishCard = ({ data }: { data: any }) => {
   const auth = getAuth(firebase_app);
   const [user] = useAuthState(auth);
   const [busy, setBusy] = useState(false);
+  const router = useRouter();
 
   const handleToggleStatus = async () => {
     const payload = {
@@ -72,7 +74,9 @@ const PublishCard = ({ data }: { data: any }) => {
         height={400}
       />
       <div className="content">
-        <p className="text-xl mb-2 h-14 line-clamp-2">{data.title}</p>
+        <p className="text-xl mb-2 h-14 line-clamp-2 cursor-pointer" onClick={() => {
+          router.push(`/publish/${data.slug}`);
+        }}>{data.title}</p>
         <div className="rating flex gap-2 mb-1">
           <span className="text-sm text-yellow-400">{data.reviews}</span>
           <div className="flex items-center gap-1">

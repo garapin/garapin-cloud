@@ -57,8 +57,8 @@ const DetailStoreApps = () => {
         });
         getAppDetail();
       }
-    } catch (error) {
-      toast.error("Application install failed!", {
+    } catch (error: any) {
+      toast.error(error?.response?.data || "Application install failed!", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -86,9 +86,7 @@ const DetailStoreApps = () => {
             />
             <div className="flex-1">
               <h2 className="text-4xl line-clamp-2 mb-2">{detail?.title}</h2>
-              <p className="text-slate-500 mb-2">
-                {detail?.user?.publisher_name}
-              </p>
+              <p className="text-slate-500 mb-2">{detail?.user?.name}</p>
               {/* <p className="mb-2">Version 2.0.3</p> */}
               <div className="bg-slate-500 w-fit px-2 py-1 rounded-sm font-medium text-white">
                 {detail?.category}
@@ -106,7 +104,7 @@ const DetailStoreApps = () => {
               leftIcon={<DownloadIconSVG className="w-10 h-10" />}
               className="w-full mb-6 bg-[#223CFF] hover:bg-[#223CFF]/80 flex items-center h-16 justify-start px-8 gap-4 text-white rounded-lg py-2 text-2xl font-normal"
               loading={installing}
-              disabled={installing || detail?.installed}
+              // disabled={installing || detail?.installed}
               styles={{
                 inner: {
                   width: "100%",
@@ -121,7 +119,8 @@ const DetailStoreApps = () => {
               onClick={handleInstall}
             >
               <p className="text-center w-full">
-                {detail?.installed ? "Installed" : "Install Now"}
+                {/* {detail?.installed ? "Installed" : "Install Now"} */}
+                Install Now
               </p>
             </Button>
           </div>
