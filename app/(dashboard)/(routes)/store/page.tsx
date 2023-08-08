@@ -72,7 +72,7 @@ export default function Store() {
 
         <div className="grid grid-cols-12 gap-4">
           {storeApps.map((item, i) => (
-            <StoreCard key={i} data={item} />
+            <StoreCard key={i} data={item} setData={setStoreApps} />
           ))}
 
           {busy &&

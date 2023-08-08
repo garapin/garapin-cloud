@@ -17,7 +17,7 @@ const LaunchCard = ({ data }: any) => {
       />
       <div className="content">
         <p className="mb-1">Installed</p>
-        <p className="text-xl mb-2 h-14 line-clamp-2">{data.title}</p>
+        <p className="text-xl mb-2 h-14 line-clamp-2 cursor-pointer" onClick={() => router.push(`/home/${data.slug}`)}>{data.title}</p>
         <div className="rating flex gap-2 mb-1">
           <span className="text-sm text-yellow-400">{data.reviews}</span>
           <div className="flex items-center gap-1">

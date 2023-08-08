@@ -53,7 +53,7 @@ const PublishApps = () => {
       .string()
       .min(2, { message: "Category should have at least 2 letters" }),
     description: z.string().min(8, { message: "Description is required" }),
-    price: z.string().min(2, { message: "Price is required" }),
+    price: z.number().min(50000, { message: "At least 50.000" }),
     source: z.string().min(8, { message: "Source is required" }),
     support_detail: z
       .string()
@@ -85,7 +85,7 @@ const PublishApps = () => {
       title: "",
       category: "",
       description: "",
-      price: "",
+      price: 0,
       source: "",
       support_detail: "",
       isPublished: false,
@@ -179,7 +179,7 @@ const PublishApps = () => {
     title: string;
     category: string;
     description: string;
-    price: string;
+    price: Number;
     source: string;
     support_detail: string;
     isPublished: boolean;
@@ -233,7 +233,7 @@ const PublishApps = () => {
 
   const getAppDetail = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const data = await axios.get(`/api/store/${slug}`);
       if (data) {
         form.setValues({
@@ -247,7 +247,7 @@ const PublishApps = () => {
           title: data.data.title,
           category: data.data.category,
           description: data.data.description,
-          price: String(data.data.price),
+          price: data.data.price,
           source: data.data.source,
           support_detail: data.data.support_detail,
           isPublished: Boolean(data.data.status === "Published"),
@@ -355,7 +355,6 @@ const PublishApps = () => {
                     description: true,
                   });
                 }}
-                key={form.values.description}
                 {...form.getInputProps("description")}
               />
               {form.errors.description && (
@@ -367,11 +366,24 @@ const PublishApps = () => {
               label="PRICE/Month"
               size="lg"
               disabled={busy}
+              type="number"
               labelProps={{
                 className: "mb-2 font-medium text-base text-slate-500",
               }}
               placeholder="Masukkan harga / bulan"
               {...form.getInputProps("price")}
+              onChange={(e) => {
+                form.values.price = Number(e.target.value);
+                form.setDirty({
+                  price: true,
+                });
+                form.setTouched({
+                  price: true,
+                });
+                form.setErrors({
+                  price: form.values.price < 50000 ? "At least 50.000" : "",
+                });
+              }}
             />
             <TextInput
               withAsterisk
@@ -440,7 +452,6 @@ const PublishApps = () => {
                     support_detail: true,
                   });
                 }}
-                key={form.values.support_detail}
                 {...form.getInputProps("support_detail")}
               />
               {form.errors.support_detail && (
@@ -449,7 +460,7 @@ const PublishApps = () => {
             </div>
             <div>
               <h3 className="font-medium text-xl mb-2 flex items-center gap-2">
-                <span>Screen Shoots</span>
+                <span>Screenshots</span>
                 <BsPlusCircle
                   className="cursor-pointer"
                   onClick={() => {
@@ -505,6 +516,7 @@ const PublishApps = () => {
                 className="w-full mb-6 bg-[#223CFF] hover:bg-[#223CFF]/80 flex items-center justify-start px-8 gap-4 text-white text-lg rounded-lg py-2 font-normal"
                 loading={busy}
                 type="submit"
+                size="lg"
                 styles={{
                   inner: {
                     width: "100%",
@@ -514,7 +526,7 @@ const PublishApps = () => {
                 }}
                 loaderPosition="center"
               >
-                <p className="text-center w-full">SAVE</p>
+                <p className="text-center w-full">Save</p>
               </Button>
             </div>
           </div>

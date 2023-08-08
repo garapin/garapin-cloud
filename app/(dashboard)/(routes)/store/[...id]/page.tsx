@@ -2,7 +2,8 @@
 
 import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
 import firebase_app from "@/firebase/firebaseApp";
-import { Button, LoadingOverlay } from "@mantine/core";
+import { Button, LoadingOverlay, Modal } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 import { usePathname } from "next/navigation";
@@ -18,6 +19,8 @@ const DetailStoreApps = () => {
   const [installing, setInstalling] = useState(false);
   const auth = getAuth(firebase_app);
   const [user] = useAuthState(auth);
+  const [opened, { open, close }] = useDisclosure(false);
+  const [imgOpen, setImgOpen] = useState("");
 
   const getAppDetail = async () => {
     try {
@@ -76,6 +79,18 @@ const DetailStoreApps = () => {
   return (
     <div className="bg-white p-4 rounded-md min-h-[calc(88vh)]">
       <LoadingOverlay visible={busy} overlayBlur={2} />
+      <Modal
+        opened={opened}
+        onClose={() => {
+          setImgOpen("");
+          close();
+        }}
+        withCloseButton={false}
+        className="p-0"
+        centered
+      >
+        <img src={imgOpen} alt="image" />
+      </Modal>
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-8">
           <div className="flex gap-4 mb-10">
@@ -140,11 +155,18 @@ const DetailStoreApps = () => {
             </p>
           </div>
           <div>
-            <h3 className="font-medium text-xl mb-2">Screenshoots</h3>
+            <h3 className="font-medium text-xl mb-2">Screenshots</h3>
             <div className="grid grid-cols-12 gap-4">
               {detail?.screenshoots?.map((item: any, i: number) => (
                 <div key={i} className="col-span-6 bg-slate-100 rounded-md">
-                  <img src={item.url} alt={item.name} />
+                  <img
+                    src={item.url}
+                    alt={item.name}
+                    onClick={() => {
+                      setImgOpen(item.url);
+                      open();
+                    }}
+                  />
                 </div>
               ))}
             </div>

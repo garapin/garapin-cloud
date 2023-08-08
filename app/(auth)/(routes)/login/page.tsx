@@ -117,7 +117,7 @@ const Login = () => {
               alt="google"
             />
             <span>
-              Punya email tapi tidak punya google account? klik disini.
+              Punya email tapi tidak punya google account? <a href="https://accounts.google.com/signin">klik disini</a>.
             </span>
           </div>
         </div>
