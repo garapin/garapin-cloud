@@ -349,6 +349,7 @@ const PublishApps = () => {
               </h2>
               <GarapinRichTextEditor
                 content={form.values.description}
+                loading={loading}
                 setContent={(e: any) => {
                   form.values.description = e;
                   form.setDirty({
@@ -446,6 +447,7 @@ const PublishApps = () => {
               </h2>
               <GarapinRichTextEditor
                 content={form.values.support_detail}
+                loading={loading}
                 setContent={(e: any) => {
                   form.values.support_detail = e;
                   form.setDirty({

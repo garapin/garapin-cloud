@@ -3,14 +3,17 @@ import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
+import { useEffect } from "react";
 
 
 export function GarapinRichTextEditor({
   content,
   setContent,
+  loading,
 }: {
   content: string;
   setContent: any;
+  loading: boolean;
 }) {
   const editor = useEditor({
     extensions: [
@@ -20,10 +23,19 @@ export function GarapinRichTextEditor({
       TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
     content,
+    autofocus: true,
+    editable: true,
+    injectCSS: false,
     onUpdate({ editor }) {
       setContent(editor.getHTML());
     },
   });
+
+  useEffect(() => {
+    if(!loading) {
+      editor?.commands.setContent(content);
+    }
+  }, [loading]);
 
   return (
     <RichTextEditor editor={editor}>
