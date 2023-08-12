@@ -1,11 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Carousel } from "@mantine/carousel";
 import Image from "next/image";
-import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
 import { createStyles } from "@mantine/core";
+import axios from "axios";
 
 const Banner = () => {
   const { classes } = useStyles();
+  const [banners, setBanners] = React.useState([]);
+  const handleGetBanners = async () => {
+    const res = await axios.get("/api/banner");
+    setBanners(res.data.data);
+  };
+
+  useEffect(() => {
+    handleGetBanners();
+  }, []);
+
+  if (banners.length === 0) {
+    return null;
+  }
   return (
     <Carousel
       mx="auto"
@@ -20,33 +33,16 @@ const Banner = () => {
       }}
       className={classes.carousel}
     >
-      {[1, 2, 3].map((item) => (
-        <Carousel.Slide key={item}>
-          <div
-            className={`bg-[#344289] rounded-[24px] flex gap-6 items-center text-white py-4 px-6`}
-          >
-            <Image
-              alt="garapin-cloud"
-              src="/images/inventory-system.png"
-              className="w-[400px]"
-              width={400}
-              height={400}
-            />
-            <div className="flex flex-col justify-between h-full">
-              <h2 className="text-3xl mb-2">INVENTORY SYSTEM</h2>
-              <p className="text-xl font-light pr-4 mb-14">
-                Butuh Inventory system untuk kontrol stok kamu di market-place
-                seperti Tokopedia, Shopee dan Lazada? Cari Aplikasi Inventory
-                Kamu di Marketplace Kami, Dan mulai kontrol inventory Kamu.
-              </p>
-              <div className="flex items-center justify-end pr-4">
-                <button className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md">
-                  <DownloadIconSVG className="w-6 h-6" />
-                  <span>Install Now</span>
-                </button>
-              </div>
-            </div>
-          </div>
+      {banners.map((banner: { image: string; url: string }, i) => (
+        <Carousel.Slide key={i}>
+          <Image
+            alt="garapin-cloud"
+            src={banner.image}
+            className="w-full rounded-[24px] cursor-pointer"
+            width={1000}
+            height={250}
+            onClick={() => window.open(banner.url, "_blank")}
+          />
         </Carousel.Slide>
       ))}
     </Carousel>
@@ -58,18 +54,18 @@ export default Banner;
 const useStyles = createStyles((theme) => ({
   carousel: {
     "& .mantine-Carousel-indicators": {
-        bottom: '-2rem',
+      bottom: "-2rem",
 
-        button: {
-            backgroundColor: '#D9D9D9',
-            height: '8px',
-            width: '8px',
+      button: {
+        backgroundColor: "#D9D9D9",
+        height: "8px",
+        width: "8px",
 
-            "&[data-active='true']": {
-                backgroundColor: '#344289',
-                width: '40px'
-            }
-        }
-    }
+        "&[data-active='true']": {
+          backgroundColor: "#344289",
+          width: "40px",
+        },
+      },
+    },
   },
 }));

@@ -5,6 +5,7 @@ import Review from "./reviewModel";
 import Images from "./imagesModel";
 import BaseImages from "./baseImageModel";
 import Categories from "./categoryModel";
+import Banners from "./bannerModel";
 
 export {
   Application,
@@ -14,4 +15,5 @@ export {
   Images,
   BaseImages,
   Categories,
+  Banners,
 };
