@@ -38,6 +38,10 @@ const PublishApps = () => {
   const inputScreenshootsRef = React.useRef<HTMLInputElement>(null);
   const [busy, setBusy] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [options, setOptions] = React.useState<any>({
+    categories: [],
+    base_images: [],
+  });
   const schema = z.object({
     logo: z.object({
       image_name: z.string(),
@@ -95,62 +99,6 @@ const PublishApps = () => {
 
     validate: zodResolver(schema),
   });
-
-  const data = [
-    {
-      label: "Bussiness App",
-      value: "Bussiness App",
-    },
-    {
-      label: "Inventory App",
-      value: "Inventory App",
-    },
-    {
-      label: "E-Commerce App",
-      value: "E-Commerce App",
-    },
-    {
-      label: "Education App",
-      value: "Education App",
-    },
-    {
-      label: "Health App",
-      value: "Health App",
-    },
-    {
-      label: "Social App",
-      value: "Social App",
-    },
-    {
-      label: "Entertainment App",
-      value: "Entertainment App",
-    },
-    {
-      label: "Travel App",
-      value: "Travel App",
-    },
-    {
-      label: "Other App",
-      value: "Other App",
-    },
-  ];
-
-  interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
-    label: string;
-  }
-
-  // eslint-disable-next-line react/display-name
-  const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
-    ({ label, ...others }: ItemProps, ref) => (
-      <div ref={ref} {...others}>
-        <Group noWrap>
-          <div>
-            <Text size="sm">{label}</Text>
-          </div>
-        </Group>
-      </div>
-    )
-  );
 
   const handleChangeLogo = async (e: any) => {
     if (form.values.logo?.image_name) {
@@ -270,10 +218,30 @@ const PublishApps = () => {
     }
   };
 
+  const handleSetBaseImageAndCategories = async () => {
+    try {
+      const res = await axios.get("/api/application/insert");
+      setOptions({
+        ...options,
+        categories: res.data.data.categories.map((item: any) => ({
+          label: item.category_name,
+          value: item.category_name,
+        })),
+        base_images: res.data.data.base_images.map((item: any) => ({
+          label: item.base_image,
+          value: item.base_image,
+        })),
+      });
+    } catch (error) {
+      console.log("errors", error);
+    }
+  };
+
   useEffect(() => {
     if (slug !== "new") {
       getAppDetail();
     }
+    handleSetBaseImageAndCategories();
   }, []);
 
   return (
@@ -326,8 +294,7 @@ const PublishApps = () => {
             <Select
               label="CATEGORY"
               placeholder="Pilih Kategori"
-              itemComponent={SelectItem}
-              data={data}
+              data={options.categories}
               withAsterisk
               disabled={busy}
               searchable
@@ -335,12 +302,8 @@ const PublishApps = () => {
               labelProps={{
                 className: "mb-2 font-medium text-base text-slate-500",
               }}
-              maxDropdownHeight={400}
               nothingFound="Tidak ada data yang ditemukan"
               size="lg"
-              filter={(value: any, item: any) =>
-                item.label.toLowerCase().includes(value.toLowerCase().trim())
-              }
               {...form.getInputProps("category")}
             />
             <div className={`${classes.descriptionEditor}`}>
@@ -397,14 +360,19 @@ const PublishApps = () => {
               placeholder="GIT Repository (public)"
               {...form.getInputProps("source")}
             />
-            <TextInput
+            <Select
               label="Base Image"
-              size="lg"
+              placeholder="Pilih Base Image"
+              data={options.base_images}
+              withAsterisk
               disabled={busy}
+              searchable
+              clearable
               labelProps={{
                 className: "mb-2 font-medium text-base text-slate-500",
               }}
-              placeholder="Enter base image"
+              nothingFound="Tidak ada data yang ditemukan"
+              size="lg"
               {...form.getInputProps("base_image")}
             />
           </div>
