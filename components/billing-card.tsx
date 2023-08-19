@@ -138,7 +138,8 @@ const BillingCard = ({ data, setData }: any) => {
               </span>
             </p>
             <div className="action mt-2">
-              {data.app_status === "Active" && (
+              {(data.app_status === "Active" ||
+                data.app_status === "Inactive") && (
                 <Button
                   leftIcon={<BillingIconSVG className="w-6 h-6 text-white" />}
                   className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 rounded-md text-white font-normal text-base"
@@ -147,17 +148,6 @@ const BillingCard = ({ data, setData }: any) => {
                   disabled={installing.status && installing.id === data._id}
                 >
                   Pay Now
-                </Button>
-              )}
-              {data.app_status === "Inactive" && (
-                <Button
-                  leftIcon={<BillingIconSVG className="w-6 h-6 text-white" />}
-                  className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 rounded-md text-white font-normal text-base"
-                  onClick={handleInstall}
-                  loading={installing.status && installing.id === data._id}
-                  disabled={installing.status && installing.id === data._id}
-                >
-                  Launch
                 </Button>
               )}
             </div>
