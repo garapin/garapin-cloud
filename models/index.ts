@@ -6,6 +6,7 @@ import Images from "./imagesModel";
 import BaseImages from "./baseImageModel";
 import Categories from "./categoryModel";
 import Banners from "./bannerModel";
+import Billings from "./billingModel";
 
 export {
   Application,
@@ -16,4 +17,5 @@ export {
   BaseImages,
   Categories,
   Banners,
+  Billings,
 };

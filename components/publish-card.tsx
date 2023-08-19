@@ -74,10 +74,15 @@ const PublishCard = ({ data }: { data: any }) => {
         height={400}
       />
       <div className="content">
-        <p className="text-xl mb-2 h-14 line-clamp-2 cursor-pointer" onClick={() => {
-          router.push(`/publish/${data.slug}`);
-        }}>{data.title}</p>
-        <div className="rating flex gap-2 mb-1">
+        <p
+          className="text-xl mb-2 h-14 line-clamp-2 cursor-pointer"
+          onClick={() => {
+            router.push(`/publish/${data.slug}`);
+          }}
+        >
+          {data.title}
+        </p>
+        {/* <div className="rating flex gap-2 mb-1">
           <span className="text-sm text-yellow-400">{data.reviews}</span>
           <div className="flex items-center gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -90,7 +95,7 @@ const PublishCard = ({ data }: { data: any }) => {
             ))}
           </div>
           <span className="text-slate-500 text-sm">({data.reviews_count})</span>
-        </div>
+        </div> */}
         <p>Pricing</p>
         <p className="text-slate-500 text-sm">
           <span className="text-blue-500">
@@ -117,12 +122,18 @@ const PublishCard = ({ data }: { data: any }) => {
             }
             thumbIcon={
               checked ? (
-                <AiOutlineCheck size="0.8rem" color="#000" stroke={3} className="cursor-pointer" />
+                <AiOutlineCheck
+                  size="0.8rem"
+                  color="#000"
+                  stroke={3}
+                  className="cursor-pointer"
+                />
               ) : (
                 <AiOutlineClose
                   size="0.8rem"
                   color={theme.colors.red[theme.fn.primaryShade()]}
-                  stroke={3} className="cursor-pointer"
+                  stroke={3}
+                  className="cursor-pointer"
                 />
               )
             }

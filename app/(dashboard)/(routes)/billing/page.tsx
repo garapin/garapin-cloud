@@ -1,128 +1,94 @@
-import Image from 'next/image'
-import { IoMdStar } from 'react-icons/io'
-import { BillingIconSVG } from '@/app/assets/icons/BillingIcon'
+"use client";
 
-export default function Billing() {
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { getAuth } from "firebase/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
+import firebase_app from "@/firebase/firebaseApp";
+import { Skeleton } from "@mantine/core";
+import BillingCard from "@/components/billing-card";
+
+export default function Billing(user_id: string | undefined) {
+  const [busy, setBusy] = useState(false);
+  const [apps, setApps] = useState({
+    dueDate: [],
+    inActive: [],
+    deleted: [],
+  });
+  const auth = getAuth(firebase_app);
+  const [user] = useAuthState(auth);
+
+  const getInstalledApps = async (user_id: string | undefined) => {
+    try {
+      setBusy(true);
+      const res = await axios.get(`/api/billing?user_id=${user_id}`);
+
+      if (res) {
+        setApps(res.data);
+      }
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      getInstalledApps(user?.uid);
+    }
+  }, [user]);
+
   return (
-    <main className='space-y-10'>
+    <main className="space-y-10">
       <section>
-        <h2 className='text-2xl mb-4'>Due Date</h2>
+        <h2 className="text-2xl mb-4">Due Date</h2>
         <div className="grid grid-cols-12 gap-4">
-          {[1, 2, 3, 4].map(item => (
-            <div key={item} className="col-span-3 bg-white p-4 rounded-2xl">
-              <Image
-                alt="apps"
-                src="/images/apps-img.png"
-                className='w-full mb-2'
-                width={400}
-                height={400}
-              />
-              <div className="content">
-                <p className='mb-1 text-green-500'>ACTIVE</p>
-                <p className='text-xl mb-2'>Inventory System</p>
-                <div className="rating flex gap-2 mb-1">
-                  <span className='text-sm text-yellow-400'>4.3</span>
-                  <div className="flex items-center gap-1">
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                  </div>
-                  <span className='text-slate-500 text-sm'>(16,325)</span>
-                </div>
-                <p>Next Billing</p>
-                <p className='text-slate-500 text-sm'>
-                  <span className='text-blue-500'>Rp. 125.000 </span>
-                  on 24-Mei-2023
-                </p>
-
-                <div className="action mt-2">
-                  <button className='flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md text-white'>
-                    <BillingIconSVG className='w-6 h-6 text-white' />
-                    <span>Pay Now</span>
-                  </button>
-                </div>
+          {busy &&
+            [1, 2, 3, 4].map((item) => (
+              <div className="col-span-3" key={item}>
+                <Skeleton height={200} radius="md" className="mb-2" />
+                <Skeleton height={20} radius="md" className="mb-2" />
+                <Skeleton height={25} radius="md" className="mb-2" />
+                <Skeleton height={20} radius="md" className="mb-2" />
               </div>
-            </div>
-          ))}
+            ))}
+          {!busy &&
+            apps.dueDate.map((item) => <BillingCard key={item} data={item} />)}
         </div>
       </section>
       <section>
-        <h2 className='text-2xl mb-4'>Overdue</h2>
+        <h2 className="text-2xl mb-4">Overdue</h2>
         <div className="grid grid-cols-12 gap-4">
-          {[1, 2, 3, 4].map(item => (
-            <div key={item} className="col-span-3 bg-white p-4 rounded-2xl">
-              <Image
-                alt="apps"
-                src="/images/apps-img.png"
-                className='w-full mb-2'
-                width={400}
-                height={400}
-              />
-              <div className="content">
-                <p className='mb-1 text-red-500'>STOP - Delete on 30-Mei-2023</p>
-                <p className='text-xl mb-2'>Inventory System</p>
-                <div className="rating flex gap-2 mb-1">
-                  <span className='text-sm text-yellow-400'>4.3</span>
-                  <div className="flex items-center gap-1">
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                  </div>
-                  <span className='text-slate-500 text-sm'>(16,325)</span>
-                </div>
-                <p>Next Billing</p>
-                <p className='text-slate-500 text-sm'>
-                  <span className='text-blue-500'>Rp. 125.000 </span>
-                  on 24-Mei-2023
-                </p>
-
-                <div className="action mt-2">
-                  <button className='flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 py-2 rounded-md text-white'>
-                    <BillingIconSVG className='w-6 h-6 text-white' />
-                    <span>Launch</span>
-                  </button>
-                </div>
+          {busy &&
+            [1, 2, 3, 4].map((item) => (
+              <div className="col-span-3" key={item}>
+                <Skeleton height={200} radius="md" className="mb-2" />
+                <Skeleton height={20} radius="md" className="mb-2" />
+                <Skeleton height={25} radius="md" className="mb-2" />
+                <Skeleton height={20} radius="md" className="mb-2" />
               </div>
-            </div>
-          ))}
+            ))}
+          {!busy &&
+            apps.inActive.map((item) => <BillingCard key={item} data={item} />)}
         </div>
       </section>
       <section>
-        <h2 className='text-2xl mb-4'>Deleted</h2>
+        <h2 className="text-2xl mb-4">Deleted</h2>
         <div className="grid grid-cols-12 gap-4">
-          {[1, 2].map(item => (
-            <div key={item} className="col-span-3 bg-white p-4 rounded-2xl">
-              <Image
-                alt="apps"
-                src="/images/apps-img.png"
-                className='w-full mb-2'
-                width={400}
-                height={400}
-              />
-              <div className="content">
-                <p className='mb-1 text-red-500'>Deleted on 30-Mei-2023</p>
-                <p className='text-xl mb-2'>Inventory System</p>
-                <div className="rating flex gap-2 mb-1">
-                  <span className='text-sm text-yellow-400'>4.3</span>
-                  <div className="flex items-center gap-1">
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                    <IoMdStar className='text-yellow-400' />
-                  </div>
-                  <span className='text-slate-500 text-sm'>(16,325)</span>
-                </div>
-                
+          {busy &&
+            [1, 2, 3, 4].map((item) => (
+              <div className="col-span-3" key={item}>
+                <Skeleton height={200} radius="md" className="mb-2" />
+                <Skeleton height={20} radius="md" className="mb-2" />
+                <Skeleton height={25} radius="md" className="mb-2" />
+                <Skeleton height={20} radius="md" className="mb-2" />
               </div>
-            </div>
-          ))}
+            ))}
+          {!busy &&
+            apps.deleted.map((item) => <BillingCard key={item} data={item} />)}
         </div>
       </section>
     </main>
-  )
+  );
 }

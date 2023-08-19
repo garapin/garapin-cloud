@@ -21,6 +21,61 @@ const StoreCard = ({ data, setData }: any) => {
   const auth = getAuth(firebase_app);
   const [user] = useAuthState(auth);
 
+  // const handleInstall = async () => {
+  //   try {
+  //     setInstalling({
+  //       status: true,
+  //       id: data._id,
+  //     });
+
+  //     const res = await axios.post(`/api/application/install`, {
+  //       app_id: data._id,
+  //       user_id: user?.uid,
+  //     });
+
+  //     if (res) {
+  //       toast.success("Application installed successfully!", {
+  //         position: "top-right",
+  //         autoClose: 5000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //         progress: undefined,
+  //         theme: "light",
+  //       });
+  //       setData((prev: any) => {
+  //         return prev.map((item: any) => {
+  //           if (item._id === data._id) {
+  //             return {
+  //               ...item,
+  //               installed: true,
+  //             };
+  //           }
+  //           return item;
+  //         });
+  //       }
+  //       );
+  //     }
+  //   } catch (error: any) {
+  //     toast.error(error?.response?.data || "Application install failed!", {
+  //       position: "top-right",
+  //       autoClose: 5000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //       theme: "light",
+  //     });
+  //   } finally {
+  //     setInstalling({
+  //       status: false,
+  //       id: "",
+  //     });
+  //   }
+  // };
+
   const handleInstall = async () => {
     try {
       setInstalling({
@@ -28,35 +83,16 @@ const StoreCard = ({ data, setData }: any) => {
         id: data._id,
       });
 
-      const res = await axios.post(`/api/application/install`, {
+      const res = await axios.post(`/api/payment/billing`, {
         app_id: data._id,
         user_id: user?.uid,
+        amount: data.price,
+        app_name: data.title,
+        app_category: data.category,
+        app_slug: data.slug,
       });
 
-      if (res) {
-        toast.success("Application installed successfully!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        setData((prev: any) => {
-          return prev.map((item: any) => {
-            if (item._id === data._id) {
-              return {
-                ...item,
-                installed: true,
-              };
-            }
-            return item;
-          });
-        }
-        );
-      }
+      window.open(res.data.link, "_blank");
     } catch (error: any) {
       toast.error(error?.response?.data || "Application install failed!", {
         position: "top-right",
@@ -86,9 +122,16 @@ const StoreCard = ({ data, setData }: any) => {
         height={400}
       />
       <div className="content">
-        <p className={`mb-1 text-[#344289]`}>{data.installed ? "Installed" : "Not Installed"}</p>
-        <p className="text-xl mb-2 h-14 line-clamp-2 cursor-pointer" onClick={() => router.push(`/store/${data.slug}`)}>{data.title}</p>
-        <div className="rating flex gap-2 mb-1">
+        <p className={`mb-1 text-[#344289]`}>
+          {data.installed ? "Installed" : "Not Installed"}
+        </p>
+        <p
+          className="text-xl mb-2 h-14 line-clamp-2 cursor-pointer"
+          onClick={() => router.push(`/store/${data.slug}`)}
+        >
+          {data.title}
+        </p>
+        {/* <div className="rating flex gap-2 mb-1">
           <span className="text-sm text-yellow-400">{data.reviews}</span>
           <div className="flex items-center gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -101,14 +144,15 @@ const StoreCard = ({ data, setData }: any) => {
             ))}
           </div>
           <span className="text-slate-500 text-sm">({data.reviews_count})</span>
-        </div>
+        </div> */}
         <p>Price</p>
         <p className="text-slate-500 text-sm">
           <span className="text-blue-500">
             Rp.{" "}
             {data.price.toLocaleString("id-ID", {
               maximumFractionDigits: 2,
-            })}<span className="text-slate-600"> / month</span>
+            })}
+            <span className="text-slate-600"> / month</span>
           </span>
           {/* on 24-Mei-2023 */}
         </p>
@@ -121,9 +165,9 @@ const StoreCard = ({ data, setData }: any) => {
             loading={installing.status && installing.id === data._id}
             disabled={installing.status && installing.id === data._id}
           >
-            {
-              installing.status && installing.id === data._id ? "Installing..." : "Install Now"
-            }
+            {installing.status && installing.id === data._id
+              ? "Installing..."
+              : "Install Now"}
           </Button>
         </div>
       </div>

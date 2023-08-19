@@ -6,13 +6,14 @@ import { Button, LoadingOverlay, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { toast } from "react-toastify";
 
 const DetailStoreApps = () => {
   const pathname = usePathname();
+  const search = useSearchParams();
   const slug = pathname.split("/")[2];
   const [busy, setBusy] = useState(false);
   const [detail, setDetail] = useState<any>(null);
@@ -38,28 +39,48 @@ const DetailStoreApps = () => {
     getAppDetail();
   }, []);
 
+  React.useEffect(() => {
+    if (search.get("status") === "success") {
+      toast.success("Application installed successfully!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+
+    if (search.get("status") === "failed") {
+      toast.error("Application install failed!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  }, [search]);
+
   const handleInstall = async () => {
     try {
       setInstalling(true);
 
-      const data = await axios.post(`/api/application/install`, {
+      const res = await axios.post(`/api/payment/billing`, {
         app_id: detail._id,
         user_id: user?.uid,
+        amount: detail.price,
+        app_name: detail.title,
+        app_category: detail.category,
+        app_slug: detail.slug,
       });
 
-      if (data) {
-        toast.success("Application installed successfully!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        getAppDetail();
-      }
+      window.open(res.data.link, "_blank");
     } catch (error: any) {
       toast.error(error?.response?.data || "Application install failed!", {
         position: "top-right",
