@@ -8,7 +8,7 @@ import firebase_app from "@/firebase/firebaseApp";
 import { Skeleton } from "@mantine/core";
 import BillingCard from "@/components/billing-card";
 
-export default function Billing(user_id: string | undefined) {
+export default function Billing() {
   const [busy, setBusy] = useState(false);
   const [apps, setApps] = useState({
     dueDate: [],
