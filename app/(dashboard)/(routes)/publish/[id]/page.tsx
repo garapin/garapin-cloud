@@ -57,7 +57,7 @@ const PublishApps = () => {
       .string()
       .min(2, { message: "Category should have at least 2 letters" }),
     description: z.string().min(8, { message: "Description is required" }),
-    price: z.number().min(50000, { message: "At least 50.000" }),
+    price: z.number().min(50000, { message: "At least 50.000" }).nullable(),
     source: z.string().min(8, { message: "Source is required" }),
     support_detail: z
       .string()
@@ -337,7 +337,11 @@ const PublishApps = () => {
               placeholder="Masukkan harga / bulan"
               {...form.getInputProps("price")}
               onChange={(e) => {
-                form.values.price = Number(e.target.value);
+                if (e.target.value) {
+                  form.values.price = Number(e.target.value);
+                } else {
+                  form.values.price = "" as any;
+                }
                 form.setDirty({
                   price: true,
                 });
