@@ -34,6 +34,7 @@ const BillingCard = ({ data, setData }: any) => {
         app_name: data.title,
         app_category: data.category,
         app_slug: data.slug,
+        install_app_name: data.install_app_name,
       });
 
       window.open(res.data.link, "_blank");

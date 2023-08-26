@@ -23,7 +23,7 @@ const installedAppSchema = new mongoose.Schema({
     required: true,
   },
   app_status: {
-    type: String, // Active, Overdue, Deleted, Uninstalled
+    type: String, // Active, Overdue, Deleted
     required: true,
   },
   created_at: {

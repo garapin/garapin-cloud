@@ -29,6 +29,7 @@ export async function GET(req: Request, res: Response) {
         ...app._doc,
         next_billing_date: installedApp.next_billing_date,
         app_status: installedApp.app_status,
+        install_app_name: installedApp.install_app_name,
       };
     }
 
@@ -50,6 +51,7 @@ export async function GET(req: Request, res: Response) {
         ...app._doc,
         next_billing_date: installedApp.next_billing_date,
         app_status: installedApp.app_status,
+        install_app_name: installedApp.install_app_name,
       };
     }
 
@@ -70,6 +72,7 @@ export async function GET(req: Request, res: Response) {
         next_billing_date: installedApp.next_billing_date,
         app_status: installedApp.app_status,
         deleted_at: installedApp.deleted_at,
+        install_app_name: installedApp.install_app_name,
       };
     }
 

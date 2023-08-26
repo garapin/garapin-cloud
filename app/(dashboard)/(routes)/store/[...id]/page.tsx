@@ -2,7 +2,7 @@
 
 import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
 import firebase_app from "@/firebase/firebaseApp";
-import { Button, LoadingOverlay, Modal } from "@mantine/core";
+import { Button, Group, Input, LoadingOverlay, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
@@ -22,6 +22,10 @@ const DetailStoreApps = () => {
   const [user] = useAuthState(auth);
   const [opened, { open, close }] = useDisclosure(false);
   const [imgOpen, setImgOpen] = useState("");
+  const [openInstall, { open: setOpenInstall, close: closeOpenInstall }] =
+    useDisclosure(false);
+
+  const [appName, setAppName] = useState("");
 
   const getAppDetail = async () => {
     try {
@@ -78,6 +82,7 @@ const DetailStoreApps = () => {
         app_name: detail.title,
         app_category: detail.category,
         app_slug: detail.slug,
+        install_app_name: appName,
       });
 
       window.open(res.data.link, "_blank");
@@ -94,6 +99,7 @@ const DetailStoreApps = () => {
       });
     } finally {
       setInstalling(false);
+      closeOpenInstall();
     }
   };
 
@@ -111,6 +117,50 @@ const DetailStoreApps = () => {
         centered
       >
         <img src={imgOpen} alt="image" />
+      </Modal>
+      <Modal
+        opened={openInstall}
+        onClose={closeOpenInstall}
+        title={`Install ${detail?.title}`}
+      >
+        <Input.Wrapper
+          id="input-demo"
+          withAsterisk
+          label="Application Name"
+          className="mb-6"
+        >
+          <Input
+            placeholder="Add application name"
+            value={appName}
+            onChange={(e) => {
+              setAppName(e.currentTarget.value);
+            }}
+          />
+        </Input.Wrapper>
+        <Group position="right">
+          <Button
+            onClick={() => {
+              if (!appName) {
+                toast.error("Nama aplikasi tidak boleh kosong!", {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                });
+              } else {
+                handleInstall();
+              }
+            }}
+            className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 rounded-md text-white font-normal text-base"
+            loading={installing}
+          >
+            Install Now
+          </Button>
+        </Group>
       </Modal>
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-8">
@@ -155,7 +205,7 @@ const DetailStoreApps = () => {
                 },
               }}
               loaderPosition="center"
-              onClick={handleInstall}
+              onClick={setOpenInstall}
             >
               <p className="text-center w-full">
                 {/* {detail?.installed ? "Installed" : "Install Now"} */}
