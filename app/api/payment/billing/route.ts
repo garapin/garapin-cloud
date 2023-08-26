@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       {
         headers: {
           Authorization: `Basic ${authToken}`,
-          // "for-user-id": process.env.XENDIT_FOR_USER_ID,
+          "for-user-id": process.env.XENDIT_FOR_USER_ID,
         },
       }
     );
