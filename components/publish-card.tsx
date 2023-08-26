@@ -81,7 +81,7 @@ const PublishCard = ({ data }: { data: any }) => {
         <Image
           alt="logo"
           src={data.logo.url}
-          className="rounded-2xl h-6 w-6 object-cover right-4 bottom-4 absolute"
+          className="rounded-2xl h-6 w-6 object-cover left-4 bottom-4 absolute"
           width={80}
           height={80}
         />

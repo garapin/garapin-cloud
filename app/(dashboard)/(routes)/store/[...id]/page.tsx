@@ -121,6 +121,7 @@ const DetailStoreApps = () => {
       <Modal
         opened={openInstall}
         onClose={closeOpenInstall}
+        centered
         title={`Install ${detail?.title}`}
       >
         <Input.Wrapper

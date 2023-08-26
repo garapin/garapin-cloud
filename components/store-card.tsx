@@ -125,6 +125,7 @@ const StoreCard = ({ data, setData }: any) => {
         opened={openInstall}
         onClose={closeOpenInstall}
         title={`Install ${data.title}`}
+        centered
       >
         <Input.Wrapper
           id="input-demo"
@@ -179,7 +180,7 @@ const StoreCard = ({ data, setData }: any) => {
         <Image
           alt="logo"
           src={data.logo.url}
-          className="rounded-2xl h-6 w-6 object-cover right-4 bottom-4 absolute"
+          className="rounded-2xl h-6 w-6 object-cover left-4 bottom-4 absolute"
           width={80}
           height={80}
         />
