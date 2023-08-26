@@ -63,7 +63,8 @@ export async function POST(request: Request) {
         });
 
         // update installed count on application
-        application.installed_count = application.installed_count + 1;
+        application.installed_count =
+          Number(application.installed_count ?? "0") + 1;
         await application.save();
 
         await newInstalledApp.save();
