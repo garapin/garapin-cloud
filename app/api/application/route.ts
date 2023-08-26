@@ -40,7 +40,12 @@ export async function POST(request: Request) {
       screenshoots: screenshoots.map((screenshoot: any) => ({
         url: screenshoot.url,
         name: screenshoot.image_name,
+        isCover: screenshoot.isCover,
+        bucket: screenshoot.bucket,
+        size: screenshoot.size,
+        full_path: screenshoot.full_path,
       })),
+      installed_count: 0,
     });
 
     // create images array
@@ -91,6 +96,10 @@ export async function PUT(request: Request) {
       screenshoots: screenshoots.map((screenshoot: any) => ({
         url: screenshoot.url,
         name: screenshoot.image_name,
+        isCover: screenshoot.isCover,
+        bucket: screenshoot.bucket,
+        size: screenshoot.size,
+        full_path: screenshoot.full_path,
       })),
     });
 

@@ -17,6 +17,10 @@ const billingSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  install_app_name: {
+    type: String,
+    required: false,
+  },
   currency: {
     type: String,
     required: true,

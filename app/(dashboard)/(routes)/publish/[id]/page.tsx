@@ -7,12 +7,14 @@ import { FaPlus, FaSave, FaTrash } from "react-icons/fa";
 import { deleteObject, ref } from "firebase/storage";
 import {
   Button,
+  Checkbox,
   Group,
   LoadingOverlay,
   Select,
   Switch,
   Text,
   TextInput,
+  Tooltip,
   createStyles,
   useMantineTheme,
 } from "@mantine/core";
@@ -59,6 +61,7 @@ const PublishApps = () => {
     description: z.string().min(8, { message: "Description is required" }),
     price: z.number().min(50000, { message: "At least 50.000" }).nullable(),
     source: z.string().min(8, { message: "Source is required" }),
+    installed_count: z.number().optional(),
     support_detail: z
       .string()
       .min(8, { message: "Support Detail is required" }),
@@ -72,6 +75,7 @@ const PublishApps = () => {
           bucket: z.string().optional(),
           size: z.number().optional(),
           url: z.string(),
+          isCover: z.boolean().optional(),
         })
       )
       .min(1, { message: "Screenshoots is required" }),
@@ -89,6 +93,7 @@ const PublishApps = () => {
       title: "",
       category: "",
       description: "",
+      installed_count: 0,
       price: 0,
       source: "",
       support_detail: "",
@@ -197,15 +202,17 @@ const PublishApps = () => {
           description: data.data.description,
           price: data.data.price,
           source: data.data.source,
+          installed_count: data.data.installed_count,
           support_detail: data.data.support_detail,
           isPublished: Boolean(data.data.status === "Published"),
           base_image: data.data.base_image,
           screenshoots: data.data.screenshoots.map((item: any) => ({
             image_name: item.name,
             url: item.url,
-            bucket: item.bucket,
-            full_path: item.full_path,
-            size: item.size,
+            bucket: item.bucket ?? "",
+            full_path: item.full_path ?? "",
+            size: item.size ?? 0,
+            isCover: item.isCover ?? false,
           })),
         });
 
@@ -280,6 +287,11 @@ const PublishApps = () => {
                 className="hidden"
               />
             </div>
+            {slug !== "new" && (
+              <p className="text-base">
+                {form.values.installed_count ?? 0}x installed
+              </p>
+            )}
             <TextInput
               withAsterisk
               label="TITLE"
@@ -464,6 +476,28 @@ const PublishApps = () => {
                         deleteImage(item);
                       }}
                     />
+                    <Tooltip label="Set as cover image">
+                      <Checkbox
+                        checked={item.isCover}
+                        className="absolute right-4 top-4 cursor-pointer"
+                        onChange={(event) => {
+                          const newScreenshoots = form.values.screenshoots.map(
+                            (i: any) => {
+                              if (i.image_name === item.image_name) {
+                                i.isCover = event.currentTarget.checked;
+                              } else {
+                                i.isCover = false;
+                              }
+                              return i;
+                            }
+                          );
+                          form.setFieldValue(
+                            "screenshoots",
+                            newScreenshoots as any
+                          );
+                        }}
+                      />
+                    </Tooltip>
                   </div>
                 ))}
 

@@ -11,8 +11,15 @@ export async function POST(request: Request) {
   );
   try {
     const body = await request.json();
-    const { user_id, amount, app_name, app_category, app_id, app_slug }: any =
-      body;
+    const {
+      user_id,
+      amount,
+      app_name,
+      app_category,
+      app_id,
+      app_slug,
+      install_app_name,
+    }: any = body;
 
     if (!user_id) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -55,7 +62,7 @@ export async function POST(request: Request) {
       {
         headers: {
           Authorization: `Basic ${authToken}`,
-          "for-user-id": process.env.XENDIT_FOR_USER_ID,
+          // "for-user-id": process.env.XENDIT_FOR_USER_ID,
         },
       }
     );
@@ -70,6 +77,7 @@ export async function POST(request: Request) {
         invoice_url: data.invoice_url,
         currency: "IDR",
         quantity: 1,
+        install_app_name: install_app_name,
       });
 
       return NextResponse.json({

@@ -14,6 +14,10 @@ const installedAppSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  install_app_name: {
+    type: String,
+    required: false,
+  },
   next_billing_date: {
     type: Date,
     required: true,

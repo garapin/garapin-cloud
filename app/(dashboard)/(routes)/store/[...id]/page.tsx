@@ -124,9 +124,12 @@ const DetailStoreApps = () => {
               <h2 className="text-4xl line-clamp-2 mb-2">{detail?.title}</h2>
               <p className="text-slate-500 mb-2">{detail?.user?.name}</p>
               {/* <p className="mb-2">Version 2.0.3</p> */}
-              <div className="bg-slate-500 w-fit px-2 py-1 rounded-sm font-medium text-white">
+              <div className="bg-slate-500 mb-2 w-fit px-2 py-1 rounded-sm font-medium text-white">
                 {detail?.category}
               </div>
+              <p className="text-base">
+                {detail?.installed_count ?? 0}x installed
+              </p>
             </div>
           </div>
           <div className="mb-6">

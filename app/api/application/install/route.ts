@@ -52,29 +52,41 @@ export async function GET(req: Request, res: Response) {
       next_billing_date: { $gt: new Date() },
     });
 
-    // get application details
-    const appIds = installedApps.map((app) => app.app_id);
-    const applications = await Application.find({ _id: { $in: appIds } });
+    for (let i = 0; i < installedApps.length; i++) {
+      let app = installedApps[i];
+      const application = await Application.findById(app.app_id);
 
-    for (let i = 0; i < applications.length; i++) {
-      const app = applications[i];
-      const id = app._id.toString();
-      const installedApp = installedApps.find((app) => app.app_id === id);
-      // const reviews = await Review.find({ app_id: id });
-
-      // const stars = reviews.reduce((acc, review) => {
-      //   const sum = acc + review.star;
-      //   return sum / reviews.length;
-      // }, 0);
-
-      applications[i] = {
+      installedApps[i] = {
         ...app._doc,
-        next_billing_date: installedApp.next_billing_date,
-        app_status: installedApp.app_status,
-        // reviews: stars,
-        // reviews_count: reviews.length,
+        detApp: application,
       };
     }
+
+    // // get application details
+    // const appIds = installedApps.map((app) => app.app_id);
+    // const applications = await Application.find({ _id: { $in: appIds } });
+
+    // console.log("installedApps", installedApps);
+
+    // for (let i = 0; i < applications.length; i++) {
+    //   const app = applications[i];
+    //   const id = app._id.toString();
+    //   const installedApp = installedApps.find((app) => app.app_id === id);
+    //   // const reviews = await Review.find({ app_id: id });
+
+    //   // const stars = reviews.reduce((acc, review) => {
+    //   //   const sum = acc + review.star;
+    //   //   return sum / reviews.length;
+    //   // }, 0);
+
+    //   applications[i] = {
+    //     ...app._doc,
+    //     next_billing_date: installedApp.next_billing_date,
+    //     app_status: installedApp.app_status,
+    //     // reviews: stars,
+    //     // reviews_count: reviews.length,
+    //   };
+    // }
 
     const inactiveApps = await InstalledApp.find({
       user_id,
@@ -98,7 +110,7 @@ export async function GET(req: Request, res: Response) {
       await app.save(); // Simpan perubahan status
     }
 
-    return NextResponse.json(applications);
+    return NextResponse.json(installedApps);
   } catch (error) {
     console.log("error", error);
     return new NextResponse("Internal Error", { status: 500 });
@@ -112,9 +124,10 @@ export async function DELETE(req: Request, res: Response) {
   const searchParams = new URLSearchParams(req?.url?.split("?")[1]);
   const user_id = searchParams.get("user_id");
   const app_id = searchParams.get("app_id");
+  const install_app_name = searchParams.get("install_app_name");
 
   try {
-    await InstalledApp.deleteOne({ app_id, user_id });
+    await InstalledApp.deleteOne({ app_id, user_id, install_app_name });
 
     return NextResponse.json({ message: "success" });
   } catch (error) {

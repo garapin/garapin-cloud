@@ -84,6 +84,7 @@ const DetailStoreApps = () => {
         params: {
           app_id: detail._id,
           user_id: user?.uid,
+          install_app_name: detail?.install_app_name,
         },
       });
 
@@ -125,7 +126,8 @@ const DetailStoreApps = () => {
     <>
       <Modal opened={opened} onClose={close} title="Confirmation" centered>
         <p>
-          Are you sure want to delete this application? You can install it again!
+          Are you sure want to delete this application? You can install it
+          again!
         </p>
         <div className="mt-4 flex gap-4 justify-end">
           <Button
@@ -146,9 +148,9 @@ const DetailStoreApps = () => {
           </Button>
         </div>
       </Modal>
-      <Button compact className="mb-2 bg-blue-500" onClick={handleLaunch}>
+      {/* <Button compact className="mb-2 bg-blue-500" onClick={handleLaunch}>
         Open in New Tab
-      </Button>
+      </Button> */}
       <div className="bg-white p-4 rounded-md min-h-[calc(88vh)]">
         <LoadingOverlay visible={busy} overlayBlur={2} />
         <div className="grid grid-cols-12 gap-4">
@@ -163,9 +165,12 @@ const DetailStoreApps = () => {
                 <h2 className="text-4xl line-clamp-2 mb-2">{detail?.title}</h2>
                 <p className="text-slate-500 mb-2">{detail?.user?.name}</p>
                 {/* <p className="mb-2">Version 2.0.3</p> */}
-                <div className="bg-slate-500 w-fit px-2 py-1 rounded-sm font-medium text-white">
+                <div className="bg-slate-500 w-fit px-2 py-1 mb-2 rounded-sm font-medium text-white">
                   {detail?.category}
                 </div>
+                <p className="text-base">
+                  {detail?.installed_count ?? 0}x installed
+                </p>
               </div>
             </div>
             <div className="mb-6">

@@ -47,6 +47,7 @@ export const multipleUploadImage = async (images: any) => {
           bucket: metadata.bucket,
           size: metadata.size,
           url: "",
+          isCover: false,
         };
 
         const url = await getDownloadURL(storageRef);

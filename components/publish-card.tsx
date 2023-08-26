@@ -63,16 +63,29 @@ const PublishCard = ({ data }: { data: any }) => {
       setBusy(false);
     }
   };
+
   return (
     <div className="col-span-3 bg-white p-4 rounded-2xl relative">
       <LoadingOverlay visible={busy} overlayBlur={2} />
-      <Image
-        alt="apps"
-        src={data?.screenshoots[0]?.url}
-        className="w-full mb-2 rounded-2xl h-52 object-cover"
-        width={400}
-        height={400}
-      />
+      <div className="relative">
+        <Image
+          alt="apps"
+          src={
+            data.screenshoots.find((item: any) => item.isCover)?.url ??
+            data.screenshoots[0].url
+          }
+          className="w-full mb-2 rounded-2xl h-52 object-cover"
+          width={400}
+          height={400}
+        />
+        <Image
+          alt="logo"
+          src={data.logo.url}
+          className="rounded-2xl h-6 w-6 object-cover right-4 bottom-4 absolute"
+          width={80}
+          height={80}
+        />
+      </div>
       <div className="content">
         <p
           className="text-xl mb-2 h-14 line-clamp-2 cursor-pointer"
@@ -96,6 +109,7 @@ const PublishCard = ({ data }: { data: any }) => {
           </div>
           <span className="text-slate-500 text-sm">({data.reviews_count})</span>
         </div> */}
+        <p className="text-sm">{data.installed_count ?? 0}x installed</p>
         <p>Pricing</p>
         <p className="text-slate-500 text-sm">
           <span className="text-blue-500">

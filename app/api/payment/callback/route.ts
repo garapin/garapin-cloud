@@ -30,6 +30,7 @@ export async function POST(request: Request) {
       const installedApp = await InstalledApp.findOne({
         app_id: billing.app_id,
         user_id: billing.user_id,
+        install_app_name: billing.install_app_name,
       });
 
       if (installedApp) {
@@ -54,11 +55,16 @@ export async function POST(request: Request) {
         const newInstalledApp = new InstalledApp({
           app_id: billing.app_id,
           user_id: billing.user_id,
+          install_app_name: billing.install_app_name,
           next_billing_date: new Date(
             new Date().setMonth(new Date().getMonth() + 1)
           ),
           app_status: "Active",
         });
+
+        // update installed count on application
+        application.installed_count = application.installed_count + 1;
+        await application.save();
 
         await newInstalledApp.save();
       }

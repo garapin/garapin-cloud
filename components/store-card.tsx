@@ -2,7 +2,8 @@
 
 import { DownloadIconSVG } from "@/app/assets/icons/DownloadIcon";
 import firebase_app from "@/firebase/firebaseApp";
-import { Button } from "@mantine/core";
+import { Button, Group, Input, Modal } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 import Image from "next/image";
@@ -20,6 +21,10 @@ const StoreCard = ({ data, setData }: any) => {
   });
   const auth = getAuth(firebase_app);
   const [user] = useAuthState(auth);
+  const [openInstall, { open: setOpenInstall, close: closeOpenInstall }] =
+    useDisclosure(false);
+
+  const [appName, setAppName] = useState("");
 
   // const handleInstall = async () => {
   //   try {
@@ -90,6 +95,7 @@ const StoreCard = ({ data, setData }: any) => {
         app_name: data.title,
         app_category: data.category,
         app_slug: data.slug,
+        install_app_name: appName,
       });
 
       window.open(res.data.link, "_blank");
@@ -109,18 +115,75 @@ const StoreCard = ({ data, setData }: any) => {
         status: false,
         id: "",
       });
+      closeOpenInstall();
     }
   };
 
   return (
     <div className="col-span-3 bg-white p-4 rounded-2xl">
-      <Image
-        alt="apps"
-        src={data?.screenshoots[0]?.url}
-        className="w-full mb-2 rounded-2xl h-52 object-contain"
-        width={400}
-        height={400}
-      />
+      <Modal
+        opened={openInstall}
+        onClose={closeOpenInstall}
+        title={`Install ${data.title}`}
+      >
+        <Input.Wrapper
+          id="input-demo"
+          withAsterisk
+          label="Application Name"
+          className="mb-6"
+        >
+          <Input
+            placeholder="Add application name"
+            value={appName}
+            onChange={(e) => {
+              setAppName(e.currentTarget.value);
+            }}
+          />
+        </Input.Wrapper>
+        <Group position="right">
+          <Button
+            onClick={() => {
+              if (!appName) {
+                toast.error("Nama aplikasi tidak boleh kosong!", {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                });
+              } else {
+                handleInstall();
+              }
+            }}
+            className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 rounded-md text-white font-normal text-base"
+            loading={installing.status && installing.id === data._id}
+          >
+            Install Now
+          </Button>
+        </Group>
+      </Modal>
+      <div className="relative">
+        <Image
+          alt="apps"
+          src={
+            data.screenshoots.find((item: any) => item.isCover)?.url ??
+            data.screenshoots[0].url
+          }
+          className="w-full mb-2 rounded-2xl h-52 object-contain"
+          width={400}
+          height={400}
+        />
+        <Image
+          alt="logo"
+          src={data.logo.url}
+          className="rounded-2xl h-6 w-6 object-cover right-4 bottom-4 absolute"
+          width={80}
+          height={80}
+        />
+      </div>
       <div className="content">
         <p className={`mb-1 text-[#344289]`}>
           {data.installed ? "Installed" : "Not Installed"}
@@ -145,6 +208,7 @@ const StoreCard = ({ data, setData }: any) => {
           </div>
           <span className="text-slate-500 text-sm">({data.reviews_count})</span>
         </div> */}
+        <p className="text-sm">{data.installed_count ?? 0}x installed</p>
         <p>Price</p>
         <p className="text-slate-500 text-sm">
           <span className="text-blue-500">
@@ -161,7 +225,7 @@ const StoreCard = ({ data, setData }: any) => {
           <Button
             leftIcon={<DownloadIconSVG className="w-6 h-6 text-white" />}
             className="flex items-center gap-2 bg-[#223CFF] hover:bg-[#223CFF]/80 px-4 rounded-md text-white font-normal text-base"
-            onClick={handleInstall}
+            onClick={setOpenInstall}
             loading={installing.status && installing.id === data._id}
             disabled={installing.status && installing.id === data._id}
           >
