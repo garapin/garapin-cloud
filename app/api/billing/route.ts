@@ -1,5 +1,5 @@
 import dbConnect from "@/lib/mongodb";
-import { Application, InstalledApp, Review } from "@/models";
+import { Application, InstalledApp, Billings } from "@/models";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request, res: Response) {
@@ -76,10 +76,40 @@ export async function GET(req: Request, res: Response) {
       };
     }
 
+    // find where created_at is before 24 hours
+    const pendingBillings = await Billings.find({
+      user_id,
+      status: "pending",
+      created_at: {
+        $lt: new Date(),
+        $gt: new Date(new Date().setDate(new Date().getDate() - 1)),
+      },
+    });
+
+    // get app details for each pending billing
+    const pendingBillingAppIds = pendingBillings.map(
+      (billing) => billing.app_id
+    );
+    const pendingBillingApps = await Application.find({
+      _id: { $in: pendingBillingAppIds },
+    });
+
+    // add app details to pending billing
+    for (let i = 0; i < pendingBillings.length; i++) {
+      const billing = pendingBillings[i];
+      const id = billing.app_id.toString();
+      const app = pendingBillingApps.find((app) => app._id.toString() === id);
+      pendingBillings[i] = {
+        ...billing._doc,
+        app: app,
+      };
+    }
+
     return NextResponse.json({
       dueDate: dueDateApps,
       inActive: inActiveApps,
       deleted: deletedApps,
+      pending: pendingBillings,
     });
   } catch (error) {
     console.log("error", error);

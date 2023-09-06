@@ -10,6 +10,7 @@ import {
   Checkbox,
   Group,
   LoadingOverlay,
+  Modal,
   Select,
   Switch,
   Text,
@@ -27,12 +28,14 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
+import { useDisclosure } from "@mantine/hooks";
 
 const PublishApps = () => {
   const { classes } = useStyles();
   const auth = getAuth();
   const [id, setId] = React.useState<any>(null);
   const pathname = usePathname();
+  const [appDetails, setAppDetails] = React.useState<any>(null);
   const slug = pathname.split("/")[2];
   const router = useRouter();
   const theme = useMantineTheme();
@@ -44,6 +47,7 @@ const PublishApps = () => {
     categories: [],
     base_images: [],
   });
+  const [opened, { open, close }] = useDisclosure(false);
   const schema = z.object({
     logo: z.object({
       image_name: z.string(),
@@ -217,6 +221,7 @@ const PublishApps = () => {
         });
 
         setId(data.data._id);
+        setAppDetails(data.data);
       }
     } catch (error) {
       console.log(error);
@@ -244,6 +249,42 @@ const PublishApps = () => {
     }
   };
 
+  const confirmDelete = async () => {
+    axios
+      .delete(`/api/application?id=${id}`)
+      .then((res) => {
+        if (res) {
+          toast.success("Delete application successfully", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          router.push("/publish");
+        }
+      })
+      .catch((error) => {
+        toast.error("Delete application failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      })
+      .finally(() => {
+        setBusy(false);
+        close();
+      });
+  };
+
   useEffect(() => {
     if (slug !== "new") {
       getAppDetail();
@@ -254,6 +295,35 @@ const PublishApps = () => {
   return (
     <div className="p-4 rounded-md">
       <LoadingOverlay visible={loading} overlayBlur={2} />
+      <Modal opened={opened} onClose={close} centered withCloseButton={false}>
+        <h2 className="text-lg font-semibold text-center">
+          Are you sure want to delete this app?
+        </h2>
+        <div className="grid grid-cols-12 gap-4 mt-6">
+          <div className="col-span-6">
+            <Button
+              onClick={close}
+              className="bg-slate-500 text-white font-normal"
+              variant="filled"
+              color="gray"
+              fullWidth
+            >
+              Cancel
+            </Button>
+          </div>
+          <div className="col-span-6">
+            <Button
+              onClick={confirmDelete}
+              className="bg-red-600 text-white font-normal"
+              variant="filled"
+              color="red"
+              fullWidth
+            >
+              Confirm
+            </Button>
+          </div>
+        </div>
+      </Modal>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-7 space-y-6">
@@ -288,9 +358,14 @@ const PublishApps = () => {
               />
             </div>
             {slug !== "new" && (
-              <p className="text-base">
-                {form.values.installed_count ?? 0}x installed
-              </p>
+              <div>
+                <p className="text-base">
+                  {form.values.installed_count ?? 0}x installed
+                </p>
+                <p className="text-base">
+                  {appDetails?.active_install ?? 0}x active apps
+                </p>
+              </div>
             )}
             <TextInput
               withAsterisk
@@ -518,26 +593,45 @@ const PublishApps = () => {
                 <div className="text-red-500">{form.errors.screenshoots}</div>
               )}
             </div>
-            <div>
-              <Button
-                leftIcon={<FaSave className="w-6 h-6" />}
-                className="w-full mb-6 bg-[#223CFF] hover:bg-[#223CFF]/80 flex items-center justify-start px-8 gap-4 text-white text-lg rounded-lg py-2 font-normal"
-                loading={busy}
-                type="submit"
-                size="lg"
-                styles={{
-                  inner: {
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                  },
-                }}
-                loaderPosition="center"
-              >
-                <p className="text-center w-full">Save</p>
-              </Button>
-            </div>
           </div>
+        </div>
+        <div className="mt-6">
+          <Button
+            leftIcon={<FaSave className="w-6 h-6" />}
+            className="w-full mb-4 bg-[#223CFF] hover:bg-[#223CFF]/80 flex items-center justify-start px-8 gap-4 text-white text-lg rounded-lg py-2 font-normal"
+            loading={busy}
+            type="submit"
+            size="lg"
+            styles={{
+              inner: {
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+              },
+            }}
+            loaderPosition="center"
+          >
+            <p className="text-center w-full">Save</p>
+          </Button>
+          <Button
+            leftIcon={<FaTrash className="w-6 h-6" />}
+            className="w-full mb-6 bg-red-500 hover:bg-red-500/80 flex items-center justify-start px-8 gap-4 text-white text-lg rounded-lg py-2 font-normal"
+            loading={busy}
+            type="button"
+            size="lg"
+            onClick={open}
+            styles={{
+              inner: {
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+              },
+            }}
+            disabled={appDetails?.active_install > 0}
+            loaderPosition="center"
+          >
+            <p className="text-center w-full">Delete</p>
+          </Button>
         </div>
       </form>
     </div>

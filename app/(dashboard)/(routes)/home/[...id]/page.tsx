@@ -7,7 +7,7 @@ import { Button, LoadingOverlay, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams, useParams } from "next/navigation";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { FaPlay } from "react-icons/fa";
@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 
 const DetailStoreApps = () => {
   const pathname = usePathname();
+  const installedName = useSearchParams().get("installed_name");
   const slug = pathname.split("/")[2];
   const [busy, setBusy] = useState(false);
   const [detail, setDetail] = useState<any>(null);
@@ -162,6 +163,7 @@ const DetailStoreApps = () => {
                 className="h-20 w-20 rounded-md"
               />
               <div className="flex-1">
+                {installedName && <p>{installedName}</p>}
                 <h2 className="text-4xl line-clamp-2 mb-2">{detail?.title}</h2>
                 <p className="text-slate-500 mb-2">{detail?.user?.name}</p>
                 {/* <p className="mb-2">Version 2.0.3</p> */}

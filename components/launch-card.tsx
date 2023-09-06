@@ -29,9 +29,18 @@ const LaunchCard = ({ data }: any) => {
       </div>
       <div className="content">
         <p className="mb-1">Installed</p>
+        {data?.install_app_name && (
+          <p className="text-xs line-clamp-1">{data?.install_app_name}</p>
+        )}
         <p
           className="text-xl mb-2 h-14 line-clamp-2 cursor-pointer"
-          onClick={() => router.push(`/home/${data?.detApp?.slug}`)}
+          onClick={() =>
+            router.push(
+              `/home/${data?.detApp?.slug}?installed_name=${
+                data?.install_app_name ?? ""
+              }`
+            )
+          }
         >
           {data?.detApp?.title}
         </p>

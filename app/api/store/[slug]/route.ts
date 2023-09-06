@@ -17,24 +17,29 @@ export async function GET(request: Request) {
 
     const stars = reviews.reduce((acc, review) => {
       const sum = acc + review.star;
-        return sum / reviews.length;
+      return sum / reviews.length;
     }, 0);
 
     const user = await User.findOne({
-      provider_uid: application.user_id
+      provider_uid: application.user_id,
     });
 
-    const installedApp = await InstalledApp.findOne({
+    const installedApp = await InstalledApp.find({
       app_id: id,
-      user_id: user.provider_uid
+      user_id: user.provider_uid,
     });
+
+    const activeInstall = installedApp.filter(
+      (app) => app.app_status === "Active"
+    );
 
     application = {
       ...application._doc,
       reviews: stars,
       reviews_count: reviews.length,
       user: user,
-      installed: installedApp ? true : false
+      installed: installedApp.length > 0 ? true : false,
+      active_install: activeInstall.length,
     };
 
     return NextResponse.json(application);

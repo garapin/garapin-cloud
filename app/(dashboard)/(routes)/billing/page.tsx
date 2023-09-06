@@ -7,6 +7,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import firebase_app from "@/firebase/firebaseApp";
 import { Skeleton } from "@mantine/core";
 import BillingCard from "@/components/billing-card";
+import PendingCard from "@/components/pendingCard";
 
 export default function Billing() {
   const [busy, setBusy] = useState(false);
@@ -14,6 +15,7 @@ export default function Billing() {
     dueDate: [],
     inActive: [],
     deleted: [],
+    pending: [],
   });
   const auth = getAuth(firebase_app);
   const [user] = useAuthState(auth);
@@ -87,6 +89,22 @@ export default function Billing() {
             ))}
           {!busy &&
             apps.deleted.map((item) => <BillingCard key={item} data={item} />)}
+        </div>
+      </section>
+      <section>
+        <h2 className="text-2xl mb-4">Pending</h2>
+        <div className="grid grid-cols-12 gap-4">
+          {busy &&
+            [1, 2, 3, 4].map((item) => (
+              <div className="col-span-3" key={item}>
+                <Skeleton height={200} radius="md" className="mb-2" />
+                <Skeleton height={20} radius="md" className="mb-2" />
+                <Skeleton height={25} radius="md" className="mb-2" />
+                <Skeleton height={20} radius="md" className="mb-2" />
+              </div>
+            ))}
+          {!busy &&
+            apps.pending.map((item) => <PendingCard key={item} data={item} />)}
         </div>
       </section>
     </main>

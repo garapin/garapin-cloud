@@ -112,3 +112,21 @@ export async function PUT(request: Request) {
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  await dbConnect();
+  // get search params id
+  const searchParams = new URLSearchParams(request?.url?.split("?")[1]);
+  const app_id = searchParams.get("id");
+
+  try {
+    const application = await Application.findByIdAndDelete(app_id);
+
+    return NextResponse.json({
+      message: "Application deleted successfully",
+    });
+  } catch (error) {
+    console.log("error", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
