@@ -709,14 +709,14 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@mantine/carousel@^6.0.17":
+"@mantine/carousel@^6.0.22":
   version "6.0.22"
   resolved "https://registry.npmjs.org/@mantine/carousel/-/carousel-6.0.22.tgz"
   integrity sha512-wM3K2tIAWZoi/H2t7Wo+W8st9wDzheMfln0XtvhfyBZfhrhOkQdqPNgauX/+EeNg3U7HHJJQnAJxB4R23RKr2A==
   dependencies:
     "@mantine/utils" "6.0.22"
 
-"@mantine/core@^6.0.17":
+"@mantine/core@^6.0.22":
   version "6.0.22"
   resolved "https://registry.npmjs.org/@mantine/core/-/core-6.0.22.tgz"
   integrity sha512-6kv0eY7n565fyjgS20qUYeCSxg3f1TJ5vurzbP1HHtFXXKSY0bYoqqDoHipFCt6NxsPQGeiC6cC0c/IWIlxoKQ==
@@ -728,7 +728,7 @@
     react-remove-scroll "^2.5.5"
     react-textarea-autosize "8.3.4"
 
-"@mantine/form@^6.0.17":
+"@mantine/form@^6.0.22":
   version "6.0.22"
   resolved "https://registry.npmjs.org/@mantine/form/-/form-6.0.22.tgz"
   integrity sha512-M73HwndjrbPekswcs/DI8ez7E4etWsuE25omdMDhhUTsTMPD/k/WB38yr7AMqI4nCuy2kGwQ5KL70s0fnkFfKw==
@@ -736,7 +736,7 @@
     fast-deep-equal "^3.1.3"
     klona "^2.0.5"
 
-"@mantine/hooks@^6.0.17":
+"@mantine/hooks@^6.0.22":
   version "6.0.22"
   resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-6.0.22.tgz"
   integrity sha512-e10//QTN2sAmC4Ryeu5X5L/TsxnrjXMOaGq3dxFPIPsCSwLzyxqySfjzVViWmoPWAj0Ak9MvE2MHFjzmOpA80w==
@@ -749,7 +749,7 @@
     clsx "1.1.1"
     csstype "3.0.9"
 
-"@mantine/tiptap@^6.0.17":
+"@mantine/tiptap@^6.0.22":
   version "6.0.22"
   resolved "https://registry.npmjs.org/@mantine/tiptap/-/tiptap-6.0.22.tgz"
   integrity sha512-Mh+0sP15QCr01e2XenEmqtDoLleN26ksgsatTt+y8zy+ouGcDWfUH1IYe0yIewkA3H0U6grIiWfZcYHT59vLKg==
